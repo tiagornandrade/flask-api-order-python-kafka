@@ -1,22 +1,24 @@
 from flask import Flask, request, jsonify 
 import json
-
+import os
 
 app = Flask(__name__)
 
 
 @app.route("/", methods=["GET","POST"])
 def create_event():
-    json_ = json.loads(request.data)
-    with open('data.json', 'w') as f:
-        json.dump(json_, f)
-    return json_
+    # data = json.loads(request.data)
+    data = request.json
+    with open('data.json', 'w') as file:
+        json.dump(data, file)
+    return data
 
 
 @app.route("/test", methods=["GET","POST"])
 def open_event():
-    f = open('data.json')
-    data = json.load(f)
+    with open("data.json") as file:
+        data = json.load(file)
+
     return data
 
 if __name__ == "__main__":
