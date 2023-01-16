@@ -35,16 +35,16 @@ services:
     ports:
     - 27017:27017
     restart: unless-stopped
-  # kafdrop:
-  #   image: obsidiandynamics/kafdrop:latest
-  #   networks: 
-  #     - broker-kafka
-  #   depends_on:
-  #     - kafka
-  #   ports:
-  #     - 19000:9000
-  #   environment:
-  #     KAFKA_BROKERCONNECT: kafka:29092
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    networks: 
+      - broker-kafka
+    depends_on:
+      - kafka
+    ports:
+      - 19000:9000
+    environment:
+      KAFKA_BROKERCONNECT: kafka:29092
 
 networks: 
   broker-kafka:
