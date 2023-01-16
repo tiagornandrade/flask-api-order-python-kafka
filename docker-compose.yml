@@ -24,16 +24,27 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  kafdrop:
-    image: obsidiandynamics/kafdrop:latest
-    networks: 
-      - broker-kafka
-    depends_on:
-      - kafka
-    ports:
-      - 19000:9000
+  
+  mongodb:
+    image: mongo
     environment:
-      KAFKA_BROKERCONNECT: kafka:29092
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ~/mongo:/data/db
+    ports:
+    - 27017:27017
+    restart: unless-stopped
+  # kafdrop:
+  #   image: obsidiandynamics/kafdrop:latest
+  #   networks: 
+  #     - broker-kafka
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - 19000:9000
+  #   environment:
+  #     KAFKA_BROKERCONNECT: kafka:29092
 
 networks: 
   broker-kafka:
