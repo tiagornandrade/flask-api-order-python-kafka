@@ -1,21 +1,24 @@
 import json
-import time
-import requests
+from urllib.request import urlopen
 
 from kafka import KafkaProducer
 
-response = requests.get('http://localhost:5000/test').text
-
-
 ORDER_KAFKA_TOPIC = "order_details"
-ORDER_LIMIT = 15
 
 producer = KafkaProducer(retries=5, bootstrap_servers='localhost:9092')
 
-data = json.loads(response)
+url = "http://localhost:5000/test"
+response = urlopen(url)
+data = json.loads(response.read())
 
-producer.send(
-    ORDER_KAFKA_TOPIC,
-    json.dumps(data).encode("utf-8")
-)
-producer.flush()
+print("sending message...")
+try:
+    future = producer.send(
+        ORDER_KAFKA_TOPIC,
+        json.dumps(data).encode("utf-8")
+    )
+    producer.flush()
+    future.get(timeout=60)
+    print("message sent successfully...")
+except Exception as ex:
+    pass
