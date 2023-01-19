@@ -52,5 +52,5 @@ def row_to_dict(row):
     })
 
 if __name__ == "__main__":
-    app.secret_key = "app"
+    app.secret_key = "app1"
     app.run(debug=True)

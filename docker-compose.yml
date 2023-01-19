@@ -25,16 +25,16 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   
-  mongodb:
-    image: mongo
-    environment:
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - ~/mongo:/data/db
-    ports:
-    - 27017:27017
-    restart: unless-stopped
+  # mongodb:
+  #   image: mongo
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #   volumes:
+  #     - ~/mongo:/data/db
+  #   ports:
+  #   - 27017:27017
+  #   restart: unless-stopped
   # kafdrop:
   #   image: obsidiandynamics/kafdrop:latest
   #   networks: 
@@ -46,16 +46,16 @@ services:
   #   environment:
   #     KAFKA_BROKERCONNECT: kafka:29092
   
-  rabbitmq:
-    image: rabbitmq:management-alpine
-    ports:
-      - 5672:5672
-      - 15672:15672
-    networks:
-      - rabbitmq_go_net
+  # rabbitmq:
+  #   image: rabbitmq:management-alpine
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   networks:
+  #     - rabbitmq_go_net
 
 networks: 
   broker-kafka:
     driver: bridge
-  rabbitmq_go_net:
-    driver: bridge
+  # rabbitmq_go_net:
+  #   driver: bridge
