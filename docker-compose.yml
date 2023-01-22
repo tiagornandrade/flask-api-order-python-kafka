@@ -24,17 +24,63 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  
-  # mongodb:
-  #   image: mongo
+  # schema-registry:
+  #   image: confluentinc/cp-schema-registry:latest
   #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #   volumes:
-  #     - ~/mongo:/data/db
+  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  #   depends_on:
+  #     - zookeeper
+  #     - kafka
   #   ports:
-  #   - 27017:27017
-  #   restart: unless-stopped
+  #     - '8081:8081'
+
+  # connect:
+  #   hostname: connect
+  #   image: jcustenborder/kafka-connect-all
+  #   depends_on:
+  #   - schema-registry
+  #   - kafka
+  #   ports:
+  #   - '8083:8083'
+  #   environment:
+  #     CONNECT_BOOTSTRAP_SERVERS: "kafka:9092"
+  #     CONNECT_REST_ADVERTISED_HOST_NAME: target-connect
+  #     CONNECT_PRODUCER_COMPRESSION_TYPE: lz4
+  #     CONNECT_GROUP_ID: connect
+  #     CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+  #     CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+  #     CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+  #     CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+  #     CONNECT_CONFIG_STORAGE_TOPIC: connect_config
+  #     CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+  #     CONNECT_OFFSET_STORAGE_TOPIC: connect_offset
+  #     CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+  #     CONNECT_STATUS_STORAGE_TOPIC: connect_status
+  #     CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+  #     CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+  #     CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+  #     CONNECT_LOG4J_LOGGERS: 'org.reflections=ERROR'
+  #   volumes:
+  #     - './books.xsd:/books.xsd:ro'
+  # control-center:
+  #   image: confluentinc/cp-enterprise-control-center:latest
+  #   depends_on:
+  #   - zookeeper
+  #   - kafka
+  #   - connect
+  #   ports:
+  #   - "9022:9021"
+  #   environment:
+  #     CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081/"
+  #     CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:9092"
+  #     CONTROL_CENTER_ZOOKEEPER_CONNECT: "zookeeper:2181"
+  #     CONTROL_CENTER_CONNECT_CLUSTER: 'connect:8083'
+  #     CONTROL_CENTER_REPLICATION_FACTOR: 1
+  #     CONTROL_CENTER_KSQL_ENABLE: "false"
+
   # kafdrop:
   #   image: obsidiandynamics/kafdrop:latest
   #   networks: 
