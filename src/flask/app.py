@@ -21,7 +21,7 @@ consumer = KafkaConsumer(
 )
 
 
-@app.route("/create_item", methods=["POST"])
+@app.route("/order/create_item", methods=["POST"])
 def create_item():
     if request.method == "POST":
         content = request.get_json()
@@ -31,7 +31,7 @@ def create_item():
     return jsonify(content)
 
 
-@app.route("/get_item", methods=["GET"])
+@app.route("/order/get_item", methods=["GET"])
 def get_item():
     for message in consumer:
         consumed_message = message.value.decode("utf-8")
