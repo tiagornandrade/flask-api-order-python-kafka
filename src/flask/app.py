@@ -1,8 +1,14 @@
+import os
 import json
+import psycopg2
+from psycopg2.extras import DictCursor
 from flask import Flask, request, jsonify
 
 
 app = Flask(__name__)
+
+url = os.environ.get("DATABASE_URL")
+connection = psycopg2.connect('postgresql://localhost/market_db')
 
 from kafka import KafkaProducer, KafkaConsumer
 
@@ -21,7 +27,7 @@ consumer = KafkaConsumer(
 )
 
 
-@app.route("/create_item", methods=["POST"])
+@app.route("/order/create_item", methods=["POST"])
 def create_item():
     if request.method == "POST":
         content = request.get_json()
@@ -31,11 +37,23 @@ def create_item():
     return jsonify(content)
 
 
-@app.route("/get_item", methods=["GET"])
+@app.route("/order/get_item", methods=["GET"])
 def get_item():
-    for message in consumer:
-        consumed_message = message.value.decode("utf-8")
-        return consumed_message
+    with connection:
+        with connection.cursor(cursor_factory=DictCursor) as cursor:
+            cursor.execute("""SELECT * FROM items_by_id;""")
+            get_itens = cursor.fetchall()
+            cursor.close()
+            response_itens = [row_to_dict(x) for x in get_itens]
+    return response_itens
+
+def row_to_dict(row):
+    return dict({
+        'id': row['id'],
+        'name': row['name'],
+        'description': row['description'],
+        'price': row['price']
+    })
 
 
 if __name__ == "__main__":
