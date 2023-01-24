@@ -1,14 +1,11 @@
-import os
 import json
-import psycopg2
-from psycopg2.extras import DictCursor
+from producer import producerApi
 from flask import Flask, request, jsonify
+from routes.order.order import orderGetItem
+from routes.transaction.transaction import transactionGetItem
 
 
 app = Flask(__name__)
-
-url = os.environ.get("DATABASE_URL")
-connection = psycopg2.connect('postgresql://localhost/market_db')
 
 from kafka import KafkaProducer, KafkaConsumer
 
@@ -38,22 +35,12 @@ def create_item():
 
 
 @app.route("/order/get_item", methods=["GET"])
-def get_item():
-    with connection:
-        with connection.cursor(cursor_factory=DictCursor) as cursor:
-            cursor.execute("""SELECT * FROM market_db.public.order;""")
-            get_itens = cursor.fetchall()
-            cursor.close()
-            response_itens = [row_to_dict(x) for x in get_itens]
-    return response_itens
+def order_get_item():
+    return orderGetItem()
 
-def row_to_dict(row):
-    return dict({
-        'id': row['id'],
-        'name': row['name'],
-        'description': row['description'],
-        'price': row['price']
-    })
+@app.route("/transaction/get_item", methods=["GET"])
+def transaction_get_item():
+    return transactionGetItem()
 
 
 if __name__ == "__main__":
