@@ -31,5 +31,5 @@ while True:
             price       = data["price"]
 
             with connection.cursor() as cursor:
-                cursor.execute("""INSERT INTO market_db.public.order (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""", (id,name,description,price))
-                cursor.execute("""INSERT INTO market_db.public.transaction VALUES (%s,%s) RETURNING trsansaction_id;""", (transaction_id, Json({'id':id,'name':name,'description':description,'price':price})))
+                cursor.execute("""INSERT INTO market_db.public.order_created (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""", (id,name,description,price))
+                cursor.execute("""INSERT INTO market_db.public.transaction_created VALUES (%s,%s) RETURNING transaction_id;""", (transaction_id, Json({'id':id,'name':name,'description':description,'price':price})))
