@@ -4,6 +4,7 @@ from database.db_connect import connection
 
 connection = connection()
 
+
 def transactionGetItem():
     with connection:
         with connection.cursor(cursor_factory=DictCursor) as cursor:
@@ -13,10 +14,8 @@ def transactionGetItem():
             response_itens = [row_to_dict_transaction(x) for x in transaction_get_itens]
     return response_itens
 
+
 def row_to_dict_transaction(row):
     return dict(
-        {
-            'transaction_id': row['transaction_id'],
-            'transaction': row['transaction']
-        }
+        {"transaction_id": row["transaction_id"], "transaction": row["transaction"]}
     )

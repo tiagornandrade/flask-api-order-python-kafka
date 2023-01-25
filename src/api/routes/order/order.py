@@ -4,6 +4,7 @@ from database.db_connect import connection
 
 connection = connection()
 
+
 def orderGetItem():
     with connection:
         with connection.cursor(cursor_factory=DictCursor) as cursor:
@@ -13,12 +14,13 @@ def orderGetItem():
             response_itens = [row_to_dict_order(x) for x in get_itens]
     return response_itens
 
+
 def row_to_dict_order(row):
     return dict(
         {
-            'id': row['id'],
-            'name': row['name'],
-            'description': row['description'],
-            'price': row['price']
+            "id": row["id"],
+            "name": row["name"],
+            "description": row["description"],
+            "price": row["price"],
         }
     )
