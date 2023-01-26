@@ -1,3 +1,3 @@
-from kafkaConsumerOrder import consumerOrderApi
+from pub_sub.consumerOrder import consumerOrderApi
 
 consumerOrderApi()
