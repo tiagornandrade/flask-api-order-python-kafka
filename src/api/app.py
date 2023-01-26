@@ -1,7 +1,7 @@
-from kafkaProducerOrder import producerApi
+from pub_sub.producerOrder import producerApi
 from flask import Flask, request, jsonify
-from routes.order.order import orderGetItem
-from routes.transaction.transaction import transactionGetItem
+from routes.order import orderGetItem
+from routes.transaction import transactionGetItem
 
 
 app = Flask(__name__)
