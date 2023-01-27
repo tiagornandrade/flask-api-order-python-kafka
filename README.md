@@ -6,26 +6,61 @@ It is being built in:
 - Flask
 - Kafka-Python
 
-# Schemas
+## Architecture
 
 ```mermaid
-erDiagram
+flowchart LR
+
+subgraph Publish
+    create_item
+end
+
+subgraph Broker/Topic
+    order_details
+end
+
+subgraph Subscriber1
+    order_created
+end
+
+subgraph Subscriber2
+    transaction_created
+end
+
+create_item --> Broker/Topic
+Broker/Topic --> Subscriber1
+Broker/Topic --> Subscriber2
+```
+
+## Schemas
+```mermaid
+classDiagram
+
+class order_created {
+    id : TEXT
+	name : TEXT
+    description : TEXT
+    price : FLOAT
+}
+
+class transaction_created {
+    trsansaction_id : TEXT
+	trsansaction : JSON
+}
+```
 
 
-checkout_item_cart ||--|{ create_item_cart : contains
-create_item_cart {
-    string item_id
-    string item_name
-    string item_description
-    string item_price
-} 
+## Script
+```sql
+CREATE table if not EXISTS order_created (
+	id TEXT,
+	name TEXT,
+    description TEXT,
+    price FLOAT
+);
 
-checkout_item_cart {
-    string cart_id
-    string item__item_id
-    string item__item_name
-    string item__item_description
-    string item__item_price
-} 
-
+CREATE table if not EXISTS transaction_created (
+	trsansaction_id TEXT,
+	transaction json
+);
 ```
