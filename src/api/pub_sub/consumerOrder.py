@@ -1,5 +1,6 @@
 import json
 from uuid import uuid4
+from envyaml import EnvYAML
 from database.db_connect import connection
 from psycopg2.extras import Json
 
@@ -7,13 +8,15 @@ from kafka import KafkaConsumer
 from kafka import KafkaProducer
 
 
+env = EnvYAML('../../env.yaml')
 connection = connection()
 
+bootstrap_servers = env['BOOTSTRAP_SERVER']
 ORDER_KAFKA_TOPIC = "order_details"
 ORDER_CONFIRMED_KAFKA_TOPIC = "order_confirmed"
 
-consumer = KafkaConsumer(ORDER_KAFKA_TOPIC, bootstrap_servers="localhost:9092")
-producer_order = KafkaProducer(bootstrap_servers="localhost:9092")
+consumer = KafkaConsumer(ORDER_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
+producer_order = KafkaProducer(bootstrap_servers=bootstrap_servers)
 
 
 def consumerOrderApi():

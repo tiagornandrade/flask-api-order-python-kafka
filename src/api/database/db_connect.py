@@ -1,7 +1,10 @@
 import psycopg2
+from envyaml import EnvYAML
 
+
+env = EnvYAML('../../env.yaml')
 
 def connection():
-    url = "postgresql://postgres:postgres@localhost:54321/postgres"
+    url = env['DATABASE_URL']
     connection = psycopg2.connect(url)
     return connection

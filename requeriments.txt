@@ -26,6 +26,7 @@ defusedxml==0.7.1
 diff-cover==7.3.0
 distlib==0.3.6
 entrypoints==0.4
+envyaml==1.10.2
 exceptiongroup==1.0.4
 executing==1.2.0
 fastapi==0.89.1
