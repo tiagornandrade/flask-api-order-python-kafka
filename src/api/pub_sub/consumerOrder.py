@@ -1,14 +1,13 @@
-import os
 import json
-import psycopg2
 from uuid import uuid4
+from database.db_connect import connection
 from psycopg2.extras import Json
 
 from kafka import KafkaConsumer
 from kafka import KafkaProducer
 
-# url = os.environ.get("DATABASE_URL")
-connection = psycopg2.connect("postgresql://localhost/market_db")
+
+connection = connection()
 
 ORDER_KAFKA_TOPIC = "order_details"
 ORDER_CONFIRMED_KAFKA_TOPIC = "order_confirmed"
@@ -34,11 +33,11 @@ def consumerOrderApi():
 
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        """INSERT INTO market_db.public.order_created (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""",
+                        """INSERT INTO public.order_created (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""",
                         (id, name, description, price),
                     )
                     cursor.execute(
-                        """INSERT INTO market_db.public.transaction_created VALUES (%s,%s) RETURNING transaction_id;""",
+                        """INSERT INTO public.transaction_created VALUES (%s,%s) RETURNING transaction_id;""",
                         (
                             transaction_id,
                             Json(
