@@ -52,20 +52,9 @@ services:
       - postgres-db-volume:/var/lib/postgresql/data
     ports:
       - 54321:5432
-  postgres-2:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: market_db
-    volumes:
-      - postgres-db-volume-2:/var/lib/postgresql/data
-    ports:
-      - 54322:5432
 
 volumes:
   postgres-db-volume:
-  postgres-db-volume-2:
 
 networks: 
   broker-kafka:
