@@ -1,7 +1,7 @@
-from database.db_connect import connection
+from dbConnect import connectionOrder
 
 
-connection = connection()
+connection = connectionOrder()
 
 CREATE_ORDER_TABLE = """
     CREATE table if not EXISTS order_created (
@@ -12,14 +12,6 @@ CREATE_ORDER_TABLE = """
     );
 """
 
-CREATE_TRANSACTION_TABLE = """
-    CREATE table if not EXISTS transaction_created (
-        transaction_id TEXT,
-        transaction json
-    );
-"""
-
 with connection:
     with connection.cursor() as cursor:
         cursor.execute(CREATE_ORDER_TABLE)
-        cursor.execute(CREATE_TRANSACTION_TABLE)
