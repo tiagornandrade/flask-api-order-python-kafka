@@ -1,7 +1,7 @@
 import json
 from uuid import uuid4
 from envyaml import EnvYAML
-from database.dbConnect import connectionOrder
+from database.dbConnect import connectionTransaction
 from psycopg2.extras import Json
 
 from kafka import KafkaConsumer
@@ -9,7 +9,7 @@ from kafka import KafkaProducer
 
 
 env = EnvYAML("../../env.yaml")
-connection = connectionOrder()
+connection = connectionTransaction()
 
 bootstrap_servers = env["BOOTSTRAP_SERVER"]
 ORDER_KAFKA_TOPIC = "order_details"
@@ -19,7 +19,7 @@ consumer = KafkaConsumer(ORDER_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
 producer_order = KafkaProducer(bootstrap_servers=bootstrap_servers)
 
 
-def consumerOrderApi():
+def consumerTransactionApi():
     while True:
         for message in consumer:
             print("Gonna start listening..")
@@ -29,12 +29,23 @@ def consumerOrderApi():
             with connection:
                 data = consumed_message
                 id = str(uuid4())
+                transaction_id = str(uuid4())
                 name = data["name"]
                 description = data["description"]
                 price = data["price"]
 
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        """INSERT INTO public.order_created (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""",
-                        (id, name, description, price),
+                        """INSERT INTO public.transaction_created VALUES (%s,%s) RETURNING transaction_id;""",
+                        (
+                            transaction_id,
+                            Json(
+                                {
+                                    "id": id,
+                                    "name": name,
+                                    "description": description,
+                                    "price": price,
+                                }
+                            ),
+                        ),
                     )

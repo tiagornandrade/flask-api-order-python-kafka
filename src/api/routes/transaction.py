@@ -1,8 +1,8 @@
 from psycopg2.extras import DictCursor
-from database.db_connect import connection
+from database.dbConnect import connectionTransaction
 
 
-connection = connection()
+connection = connectionTransaction()
 
 
 def transactionGetItem():
