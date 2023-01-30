@@ -1,5 +1,5 @@
 from pub_sub.producerOrder import producerApi
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify
 from routes.order import orderGetItem
 from routes.transaction import transactionGetItem
 
@@ -22,7 +22,7 @@ def order_get_item():
 
 @app.route("/transaction/get_item", methods=["GET"])
 def transaction_get_item():
-    return redirect("http://localhost:5001/transaction/get_item")
+    return transactionGetItem()
 
 
 if __name__ == "__main__":

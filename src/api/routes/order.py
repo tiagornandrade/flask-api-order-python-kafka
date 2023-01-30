@@ -1,8 +1,8 @@
 from psycopg2.extras import DictCursor
-from database.dbConnect import connectionOrder
+from database.db_connect import connection
 
 
-connection = connectionOrder()
+connection = connection()
 
 
 def orderGetItem():

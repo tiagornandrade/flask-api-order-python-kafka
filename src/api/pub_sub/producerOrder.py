@@ -2,9 +2,9 @@ import json
 from envyaml import EnvYAML
 from kafka import KafkaProducer, KafkaConsumer
 
-env = EnvYAML("../../env.yaml")
+env = EnvYAML('../../env.yaml')
 KAFKA_TOPIC = "order_details"
-bootstrap_servers = env["BOOTSTRAP_SERVER"]
+bootstrap_servers = env['BOOTSTRAP_SERVER']
 
 producer = KafkaProducer(retries=5, bootstrap_servers=bootstrap_servers)
 
