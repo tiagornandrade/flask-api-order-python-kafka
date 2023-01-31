@@ -1,4 +1,5 @@
 import json
+from uuid import uuid4
 from envyaml import EnvYAML
 from kafka import KafkaProducer, KafkaConsumer
 
@@ -18,7 +19,18 @@ consumer = KafkaConsumer(
 
 
 def producerApi(content):
-    future = producer.send(KAFKA_TOPIC, json.dumps(content).encode("utf-8"))
+    data = content
+    id = str(uuid4())
+    name = data["name"]
+    description = data["description"]
+    price = data["price"]
+    message = {
+            "id": id,
+            "name": name,
+            "description": description,
+            "price": price
+    }
+    future = producer.send(KAFKA_TOPIC, json.dumps(message).encode("utf-8"))
     producer.flush()
     future.get(timeout=60)
     return future
