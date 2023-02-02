@@ -28,7 +28,7 @@ def consumerTransactionApi():
             print(consumed_message)
             with connection:
                 data = consumed_message
-                id = str(uuid4())
+                id = data["id"]
                 transaction_id = str(uuid4())
                 name = data["name"]
                 description = data["description"]

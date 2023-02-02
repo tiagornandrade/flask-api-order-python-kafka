@@ -28,7 +28,7 @@ def consumerOrderApi():
             print(consumed_message)
             with connection:
                 data = consumed_message
-                id = str(uuid4())
+                id = data["id"]
                 name = data["name"]
                 description = data["description"]
                 price = data["price"]
