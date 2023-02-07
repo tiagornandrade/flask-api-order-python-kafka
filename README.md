@@ -11,12 +11,20 @@ It is being built in:
 ```mermaid
 flowchart LR
 
-subgraph Publish
-    create_item
+subgraph Publish1
+    1[create_order]
+end
+
+subgraph Publish2
+    2[delete_order]
 end
 
 subgraph Broker/Topic
-    order_details
+    a[create_order_topic]
+end
+
+subgraph Broker/Topic
+    b[delete_order_topic]
 end
 
 subgraph Subscriber1
@@ -24,28 +32,47 @@ subgraph Subscriber1
 end
 
 subgraph Subscriber2
+    order_deleted
+end
+
+subgraph Subscriber3
     transaction_created
 end
 
-create_item --> Broker/Topic
-Broker/Topic --> Subscriber1
-Broker/Topic --> Subscriber2
+subgraph Subscriber4
+    transaction_deleted
+end
+
+1 --> a
+2 --> b
+a --> Subscriber1
+b --> Subscriber2
+a --> Subscriber3
+b --> Subscriber4
 ```
 
 ## Schemas
 ```mermaid
-classDiagram
+erDiagram
 
-class order_created {
-    id : TEXT
-	name : TEXT
-    description : TEXT
-    price : FLOAT
+order_created {
+    TEXT id
+	TEXT name
+    TEXT description
+    FLOAT price
 }
 
-class transaction_created {
-    trsansaction_id : TEXT
-	trsansaction : JSON
+order_deleted {
+    TEXT id
+    TEXT id_created
+	TEXT name
+    TEXT description
+    FLOAT price
+}
+
+transaction_created {
+    TEXT trsansaction_id
+	JSON trsansaction
 }
 ```
 
@@ -57,6 +84,14 @@ CREATE table if not EXISTS order_created (
 	name TEXT,
     	description TEXT,
     	price FLOAT
+);
+
+CREATE table if not EXISTS order_deleted (
+	id TEXT,
+	id_created TEXT,
+	name TEXT,
+    description TEXT,
+    price FLOAT
 );
 
 CREATE table if not EXISTS transaction_created (
