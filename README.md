@@ -11,12 +11,20 @@ It is being built in:
 ```mermaid
 flowchart LR
 
-subgraph Publish
-    create_item
+subgraph Publish1
+    1[create_order]
+end
+
+subgraph Publish2
+    2[delete_order]
 end
 
 subgraph Broker/Topic
-    order_details
+    a[create_order_topic]
+end
+
+subgraph Broker/Topic
+    b[delete_order_topic]
 end
 
 subgraph Subscriber1
@@ -31,10 +39,16 @@ subgraph Subscriber3
     transaction_created
 end
 
-create_item --> Broker/Topic
-Broker/Topic --> Subscriber1
-Broker/Topic --> Subscriber2
-Broker/Topic --> Subscriber3
+subgraph Subscriber4
+    transaction_deleted
+end
+
+1 --> a
+2 --> b
+a --> Subscriber1
+b --> Subscriber2
+a --> Subscriber3
+b --> Subscriber4
 ```
 
 ## Schemas
