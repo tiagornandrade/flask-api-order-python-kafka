@@ -12,4 +12,4 @@ def transaction_get_item():
 
 if __name__ == "__main__":
     app.secret_key = "app_flask_kafka_transaction"
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5002)
