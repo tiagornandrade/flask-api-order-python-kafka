@@ -24,28 +24,41 @@ subgraph Subscriber1
 end
 
 subgraph Subscriber2
+    order_deleted
+end
+
+subgraph Subscriber3
     transaction_created
 end
 
 create_item --> Broker/Topic
 Broker/Topic --> Subscriber1
 Broker/Topic --> Subscriber2
+Broker/Topic --> Subscriber3
 ```
 
 ## Schemas
 ```mermaid
-classDiagram
+erDiagram
 
-class order_created {
-    id : TEXT
-	name : TEXT
-    description : TEXT
-    price : FLOAT
+order_created {
+    TEXT id
+	TEXT name
+    TEXT description
+    FLOAT price
 }
 
-class transaction_created {
-    trsansaction_id : TEXT
-	trsansaction : JSON
+order_deleted {
+    TEXT id
+    TEXT id_created
+	TEXT name
+    TEXT description
+    FLOAT price
+}
+
+transaction_created {
+    TEXT trsansaction_id
+	JSON trsansaction
 }
 ```
 
@@ -54,6 +67,14 @@ class transaction_created {
 ```sql
 CREATE table if not EXISTS order_created (
 	id TEXT,
+	name TEXT,
+    description TEXT,
+    price FLOAT
+);
+
+CREATE table if not EXISTS order_deleted (
+	id TEXT,
+	id_created TEXT,
 	name TEXT,
     description TEXT,
     price FLOAT
