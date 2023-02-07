@@ -5,23 +5,20 @@ from database.dbConnect import connectionTransaction
 from psycopg2.extras import Json
 
 from kafka import KafkaConsumer
-from kafka import KafkaProducer
 
 
 env = EnvYAML("../../env.yaml")
 connection = connectionTransaction()
 
 bootstrap_servers = env["BOOTSTRAP_SERVER"]
-ORDER_KAFKA_TOPIC = "order_details"
+ORDER_KAFKA_TOPIC = "order_created"
 ORDER_CONFIRMED_KAFKA_TOPIC = "order_confirmed"
 
-consumer = KafkaConsumer(ORDER_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
-producer_order = KafkaProducer(bootstrap_servers=bootstrap_servers)
+consumer_transaction = KafkaConsumer(ORDER_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
 
-
-def consumerTransactionApi():
+def consumerTransactionCreated():
     while True:
-        for message in consumer:
+        for message in consumer_transaction:
             print("Gonna start listening..")
             print("Ongoing transaction..")
             consumed_message = json.loads(message.value.decode())
