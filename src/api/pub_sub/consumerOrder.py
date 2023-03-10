@@ -1,14 +1,14 @@
 import json
 from uuid import uuid4
 from envyaml import EnvYAML
-from database.dbConnect import connectionOrder
+from database.dbConnect import connectionRead
 from psycopg2.extras import Json
 
 from kafka import KafkaConsumer
 
 
 env = EnvYAML("../../env.yaml")
-connection = connectionOrder()
+connection = connectionRead()
 
 bootstrap_servers = env["BOOTSTRAP_SERVER"]
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
@@ -35,7 +35,7 @@ class Order:
 
                     with connection.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order_created (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""",
+                            """INSERT INTO public.order (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""",
                             (id, name, description, price),
                         )
     
