@@ -22,7 +22,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
   
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
@@ -42,14 +42,14 @@ services:
   #     - 15672:15672
   #   networks:
   #     - rabbitmq_go_net
-  postgres:
+  postgres-1:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: market_db
     volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
+      - postgres-db-volume-1:/var/lib/postgresql/data
     ports:
       - 54321:5432
   postgres-2:
@@ -57,14 +57,14 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: market_db
+      POSTGRES_DB: market_db_read
     volumes:
       - postgres-db-volume-2:/var/lib/postgresql/data
     ports:
       - 54322:5432
 
 volumes:
-  postgres-db-volume:
+  postgres-db-volume-1:
   postgres-db-volume-2:
 
 networks: 
