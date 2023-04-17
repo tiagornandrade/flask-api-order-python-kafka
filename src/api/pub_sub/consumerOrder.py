@@ -32,11 +32,14 @@ class Order:
                     name = data["name"]
                     description = data["description"]
                     price = data["price"]
+                    is_created = True
+                    is_updated = False
+                    is_deleted = False
 
                     with connection.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (id, name, description, price) VALUES (%s,%s,%s,%s) RETURNING id;""",
-                            (id, name, description, price),
+                            """INSERT INTO public.order (id, name, description, price, is_created, is_updated, is_deleted) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id;""",
+                            (id, name, description, price, is_created, is_updated, is_deleted),
                         )
     
     def consumerOrderDeleted():
@@ -49,14 +52,15 @@ class Order:
                 with connection:
                     data = consumed_message
                     id = data["id"]
-                    id_created = data["id_created"]
                     name = data["name"]
                     description = data["description"]
                     price = data["price"]
+                    is_created = False
+                    is_updated = False
                     is_deleted = True
 
                     with connection.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order_deleted (id, id_created, name, description, price, is_deleted) VALUES (%s,%s,%s,%s,%s, %s) RETURNING id;""",
-                            (id, id_created, name, description, price, is_deleted),
+                             """INSERT INTO public.order (id, name, description, price, is_created, is_updated, is_deleted) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id;""",
+                            (id, name, description, price, is_created, is_updated, is_deleted),
                         )
