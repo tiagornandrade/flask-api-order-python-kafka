@@ -24,16 +24,16 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
   
-  kafdrop:
-    image: obsidiandynamics/kafdrop:latest
-    networks: 
-      - broker-kafka
-    depends_on:
-      - kafka
-    ports:
-      - 19000:9000
-    environment:
-      KAFKA_BROKERCONNECT: kafka:29092
+  # kafdrop:
+  #   image: obsidiandynamics/kafdrop:latest
+  #   networks: 
+  #     - broker-kafka
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - 19000:9000
+  #   environment:
+  #     KAFKA_BROKERCONNECT: kafka:29092
 
   # rabbitmq:
   #   image: rabbitmq:management-alpine
