@@ -1,4 +1,5 @@
 .env
+.idea
 dev
 __pycache__
 env.yaml
