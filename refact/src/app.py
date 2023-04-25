@@ -11,6 +11,7 @@ app = Flask(__name__)
 connection = connectionWrite()
 
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
+ORDER_UPDATED_KAFKA_TOPIC = "order_updated"
 ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
 bootstrap_servers = "localhost:9092"
 
@@ -21,21 +22,16 @@ producer_order = KafkaProducer(retries=5, bootstrap_servers=bootstrap_servers)
 def create_item():
     if request.method == "POST":
         data = request.get_json()
-        id = str(uuid4())
+
+        user_id = str(uuid4())
+        event_key = str(uuid4())
         name = data["name"]
         description = data["description"]
         price = data["price"]
-        created_at = datetime.datetime.now()
-
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO public.order (id, name, description, price, created_at) VALUES (%s,%s,%s,%s,%s) RETURNING id;",
-                (id, name, description, price, created_at),
-            )
-            connection.commit()
 
         message = {
-            "id": id,
+            "user_id": user_id,
+            "event_key": event_key,
             "name": name,
             "description": description,
             "price": price,
@@ -43,49 +39,55 @@ def create_item():
         producer_order.send(
             ORDER_CREATED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
         )
-        return jsonify({'message': 'Dados inseridos com sucesso!'})
+        return jsonify({'message': 'Dado inserido com sucesso!'})
 
 
-@app.route("/order/update_item/<string:id>", methods=["POST"])
-def update_item(id):
-    data = request.json
-    name = data["name"]
-    description = data["description"]
-    price = data["price"]
-    updated_at = datetime.datetime.now()
+@app.route("/order/update_item", methods=["PUT"])
+def update_item():
+    if request.method == "PUT":
+        data = request.get_json()
 
-    with connection.cursor() as cursor:
-        cursor.execute(
-            "UPDATE public.order SET name = %s, description = %s, price = %s, updated_at = %s WHERE id = %s;",
-            (name, description, price, updated_at, id),
+        user_id = data["user_id"]
+        event_key = str(uuid4())
+        name = data["name"]
+        description = data["description"]
+        price = data["price"]
+
+        message = {
+            "user_id": user_id,
+            "event_key": event_key,
+            "name": name,
+            "description": description,
+            "price": price,
+        }
+        producer_order.send(
+            ORDER_UPDATED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
         )
-        connection.commit()
-
-    message = {
-        "id": id,
-        "name": name,
-        "description": description,
-        "price": price,
-        "updated_at": updated_at
-    }
-    producer_order.send(
-        ORDER_CREATED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
-    )
-    return jsonify({'message': 'Dados atualizados com sucesso!'})
-
-# @app.route("/order/delete_item", methods=["POST"])
-# def delete_item():
-#     return redirect("http://localhost:5001/order/delete_item")
+    return jsonify({'message': 'Dado atualizado com sucesso!'})
 
 
-# @app.route("/order/get_item", methods=["GET"])
-# def order_get_item():
-#     return redirect("http://localhost:5001/order/get_item")
+@app.route("/order/delete_item", methods=["DELETE"])
+def delete_item():
+    if request.method == "DELETE":
+        data = request.get_json()
 
+        user_id = data["user_id"]
+        event_key = str(uuid4())
+        name = data["name"]
+        description = data["description"]
+        price = data["price"]
 
-# @app.route("/transaction/get_item", methods=["GET"])
-# def transaction_get_item():
-#     return redirect("http://localhost:5002/transaction/get_item")
+        message = {
+            "user_id": user_id,
+            "event_key": event_key,
+            "name": name,
+            "description": description,
+            "price": price,
+        }
+        producer_order.send(
+            ORDER_DELETED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
+        )
+    return jsonify({'message': 'Dado excluido com sucesso!'})
 
 
 if __name__ == "__main__":
