@@ -82,8 +82,8 @@ transaction_created {
 CREATE table if not EXISTS order_created (
 	id TEXT,
 	name TEXT,
-    description TEXT,
-    price FLOAT
+    	description TEXT,
+    	price FLOAT
 );
 
 CREATE table if not EXISTS order_deleted (

@@ -2,7 +2,8 @@ import json
 from uuid import uuid4
 from envyaml import EnvYAML
 from kafka import KafkaProducer
-from dataclasses import dataclass
+from datetime import datetime
+from dataclasses import dataclass, field
 
 env = EnvYAML("../../env.yaml")
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
@@ -18,6 +19,7 @@ class MessageCreated:
     name: str
     description: str
     price: float
+    created_at: datetime = field(default_factory=datetime.now)
 
 
 @dataclass
@@ -27,10 +29,11 @@ class MessageDeleted:
     name: str
     description: str
     price: float
+    created_at: datetime = field(default_factory=datetime.now)
 
 
-def producerCreated(content):
-    data = content
+def producerCreated(message):
+    data = message
     msg_created = MessageCreated(
         str(uuid4()), data["name"], data["description"], data["price"]
     )
@@ -48,17 +51,18 @@ def producerCreated(content):
     return future
 
 
-def producerDeleted(content):
-    data = content
+def producerDeleted(response_itens):
+    data = response_itens
     msg_deleted = MessageDeleted(
-        str(uuid4()), data["id"], data["name"], data["description"], data["price"]
+        data["id"], data["name"], data["description"], data["price"]
     )
     message = {
         "id": msg_deleted.id,
-        "id_created": msg_deleted.id_created,
         "name": msg_deleted.name,
         "description": msg_deleted.description,
         "price": msg_deleted.price,
+        "is_created": False,
+        "is_updated": False,
         "is_deleted": True,
     }
     future = producer_order.send(

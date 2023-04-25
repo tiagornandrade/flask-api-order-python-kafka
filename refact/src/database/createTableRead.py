@@ -1,15 +1,18 @@
-from dbConnect import connectionWrite
+from dbConnect import connectionRead
 
 
-connection = connectionWrite()
+connection = connectionRead()
 
 CREATE_ORDER_TABLE = """
     CREATE table if not EXISTS public.order (
-        id TEXT,
+        user_id TEXT,
+        evemt_key TEXT,
         name TEXT,
         description TEXT,
         price FLOAT,
-        created_at TIMESTAMP
+        created_at TIMESTAMP,
+        updated_at TIMESTAMP,
+        deleted_at TIMESTAMP
     );
 """
 

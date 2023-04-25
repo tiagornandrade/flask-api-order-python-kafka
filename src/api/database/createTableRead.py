@@ -8,7 +8,11 @@ CREATE_ORDER_TABLE = """
         id TEXT,
         name TEXT,
         description TEXT,
-        price FLOAT
+        price FLOAT,
+        created_ate TIMESTAMP,
+        is_created BOOLEAN,
+        is_updated BOOLEAN,
+        is_deleted BOOLEAN
     );
 """
 
