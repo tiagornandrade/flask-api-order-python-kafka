@@ -2,7 +2,7 @@ import json
 from uuid import uuid4
 from kafka import KafkaConsumer
 from psycopg2.extras import Json
-from database.dbConnect import connectionRead, connectionWrite
+from dbConnect import connectionRead, connectionWrite
 
 
 connection_read = connectionRead()
