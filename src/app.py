@@ -1,14 +1,11 @@
-# from pub_sub.producer import producerCreated
 import json
 import datetime
 from uuid import uuid4
 from kafka import KafkaProducer
 from flask import Flask, request, jsonify
-from database.dbConnect import connectionWrite
 
 
 app = Flask(__name__)
-connection = connectionWrite()
 
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
 ORDER_UPDATED_KAFKA_TOPIC = "order_updated"
@@ -28,6 +25,7 @@ def create_item():
         name = data["name"]
         description = data["description"]
         price = data["price"]
+        method = request.method
 
         message = {
             "user_id": user_id,
@@ -35,6 +33,7 @@ def create_item():
             "name": name,
             "description": description,
             "price": price,
+            "method": method,
         }
         producer_order.send(
             ORDER_CREATED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
@@ -52,6 +51,7 @@ def update_item():
         name = data["name"]
         description = data["description"]
         price = data["price"]
+        method = request.method
 
         message = {
             "user_id": user_id,
@@ -59,6 +59,7 @@ def update_item():
             "name": name,
             "description": description,
             "price": price,
+            "method": method,
         }
         producer_order.send(
             ORDER_UPDATED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
@@ -76,6 +77,7 @@ def delete_item():
         name = data["name"]
         description = data["description"]
         price = data["price"]
+        method = request.method
 
         message = {
             "user_id": user_id,
@@ -83,6 +85,7 @@ def delete_item():
             "name": name,
             "description": description,
             "price": price,
+            "method": method,
         }
         producer_order.send(
             ORDER_DELETED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
