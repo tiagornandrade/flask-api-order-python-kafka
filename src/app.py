@@ -1,8 +1,6 @@
-import json
-import datetime
-from uuid import uuid4
 from kafka import KafkaProducer
 from flask import Flask, request, jsonify
+from utils.producer import producerCreated, producerDeleted, producerUpdated
 
 
 app = Flask(__name__)
@@ -19,51 +17,14 @@ producer_order = KafkaProducer(retries=5, bootstrap_servers=bootstrap_servers)
 def create_item():
     if request.method == "POST":
         data = request.get_json()
-
-        user_id = str(uuid4())
-        event_key = str(uuid4())
-        name = data["name"]
-        description = data["description"]
-        price = data["price"]
-        method = request.method
-
-        message = {
-            "user_id": user_id,
-            "event_key": event_key,
-            "name": name,
-            "description": description,
-            "price": price,
-            "method": method,
-        }
-        producer_order.send(
-            ORDER_CREATED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
-        )
+        producerCreated(data)
         return jsonify({'message': 'Dado inserido com sucesso!'})
-
 
 @app.route("/order/update_item", methods=["PUT"])
 def update_item():
     if request.method == "PUT":
         data = request.get_json()
-
-        user_id = data["user_id"]
-        event_key = str(uuid4())
-        name = data["name"]
-        description = data["description"]
-        price = data["price"]
-        method = request.method
-
-        message = {
-            "user_id": user_id,
-            "event_key": event_key,
-            "name": name,
-            "description": description,
-            "price": price,
-            "method": method,
-        }
-        producer_order.send(
-            ORDER_UPDATED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
-        )
+        producerUpdated(data)
     return jsonify({'message': 'Dado atualizado com sucesso!'})
 
 
@@ -71,25 +32,7 @@ def update_item():
 def delete_item():
     if request.method == "DELETE":
         data = request.get_json()
-
-        user_id = data["user_id"]
-        event_key = str(uuid4())
-        name = data["name"]
-        description = data["description"]
-        price = data["price"]
-        method = request.method
-
-        message = {
-            "user_id": user_id,
-            "event_key": event_key,
-            "name": name,
-            "description": description,
-            "price": price,
-            "method": method,
-        }
-        producer_order.send(
-            ORDER_DELETED_KAFKA_TOPIC, json.dumps(message).encode("utf-8")
-        )
+        producerDeleted(data)
     return jsonify({'message': 'Dado excluido com sucesso!'})
 
 
