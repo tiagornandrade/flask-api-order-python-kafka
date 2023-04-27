@@ -3,7 +3,7 @@ import datetime
 from uuid import uuid4
 from kafka import KafkaConsumer
 from psycopg2.extras import Json
-from dbConnect import connectionRead, connectionWrite
+from database.dbConnect import connectionRead, connectionWrite
 
 
 connection_read = connectionRead()
@@ -31,13 +31,15 @@ class Order:
                     name = data["name"]
                     description = data["description"]
                     price = data["price"]
-                    event_timestamp = datetime.datetime.now()
+                    created_at = None
+                    updated_at = datetime.datetime.now()
+                    is_deleted = False
                     method = data["method"]
 
                     with connection_read.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, name, description, price, created_at, updated_at, is_deleted, method) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, name, description, price, created_at, updated_at, is_deleted, method),
                         )
 
                 with connection_write:
@@ -47,13 +49,15 @@ class Order:
                     name = data["name"]
                     description = data["description"]
                     price = data["price"]
-                    event_timestamp = datetime.datetime.now()
+                    created_at = None
+                    updated_at = datetime.datetime.now()
+                    is_deleted = False
                     method = data["method"]
 
                     with connection_write.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, name, description, price, created_at, updated_at, is_deleted, method) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, name, description, price, created_at, updated_at, is_deleted, method),
                         )
      
 
