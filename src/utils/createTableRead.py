@@ -7,11 +7,11 @@ CREATE_ORDER_TABLE = """
     CREATE table if not EXISTS public.order (
         user_id TEXT,
         event_key TEXT,
-        name TEXT,
+        product_name TEXT,
         description TEXT,
         price FLOAT,
         event_timestamp TIMESTAMP,
-        method TEXT
+        operation TEXT
     );
 """
 
