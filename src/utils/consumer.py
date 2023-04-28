@@ -33,32 +33,32 @@ class Order:
                     data = consumed_message
                     user_id = data["user_id"]
                     event_key = data["event_key"]
-                    name = data["name"]
+                    product_name = data["product_name"]
                     description = data["description"]
                     price = data["price"]
                     event_timestamp = datetime.datetime.now()
-                    method = data["method"]
+                    operation = data["operation"]
 
                     with connection_read.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )
 
                 with connection_write:
                     data = consumed_message
                     user_id = data["user_id"]
                     event_key = data["event_key"]
-                    name = data["name"]
+                    product_name = data["product_name"]
                     description = data["description"]
                     price = data["price"]
                     event_timestamp = datetime.datetime.now()
-                    method = data["method"]
+                    operation = data["operation"]
 
                     with connection_write.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )
 
     def consumerOrderDeleted():
@@ -73,32 +73,32 @@ class Order:
                     data = consumed_message
                     user_id = data["user_id"]
                     event_key = data["event_key"]
-                    name = data["name"]
+                    product_name = data["product_name"]
                     description = data["description"]
                     price = data["price"]
                     event_timestamp = datetime.datetime.now()
-                    method = data["method"]
+                    operation = data["operation"]
 
                     with connection_read.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )
 
                 with connection_write:
                     data = consumed_message
                     user_id = data["user_id"]
                     event_key = data["event_key"]
-                    name = data["name"]
+                    product_name = data["product_name"]
                     description = data["description"]
                     price = data["price"]
                     event_timestamp = datetime.datetime.now()
-                    method = data["method"]
+                    operation = data["operation"]
 
                     with connection_write.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )
 
     def consumerOrderUpdated():
@@ -113,30 +113,30 @@ class Order:
                     data = consumed_message
                     user_id = data["user_id"]
                     event_key = data["event_key"]
-                    name = data["name"]
+                    product_name = data["product_name"]
                     description = data["description"]
                     price = data["price"]
                     event_timestamp = datetime.datetime.now()
-                    method = data["method"]
+                    operation = data["operation"]
 
                     with connection_read.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )
 
                 with connection_write:
                     data = consumed_message
                     user_id = data["user_id"]
                     event_key = data["event_key"]
-                    name = data["name"]
+                    product_name = data["product_name"]
                     description = data["description"]
                     price = data["price"]
                     event_timestamp = datetime.datetime.now()
-                    method = data["method"]
+                    operation = data["operation"]
 
                     with connection_write.cursor() as cursor:
                         cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
+                            """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
+                            (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )

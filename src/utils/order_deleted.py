@@ -1,61 +1,8 @@
-import json
-import datetime
-from uuid import uuid4
-from kafka import KafkaConsumer
-from psycopg2.extras import Json
-from dbConnect import connectionRead, connectionWrite
+import asyncio
+from consumer import Order
 
 
-connection_read = connectionRead()
-connection_write = connectionWrite()
+async def OrderDeleted():
+    await asyncio.create_task(Order.consumerOrderDeleted())
 
-ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
-bootstrap_servers = "localhost:9092"
-
-consumer_order_deleted = KafkaConsumer(ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
-
-
-class Order:
-    def consumerOrderDeleted():
-        while True:
-            for message in consumer_order_deleted:
-                print("Gonna start listening..")
-                print("Ongoing transaction..")
-                consumed_message = json.loads(message.value.decode("utf-8"))
-                print(consumed_message)
-
-                with connection_read:
-                    data = consumed_message
-                    user_id = data["user_id"]
-                    event_key = data["event_key"]
-                    name = data["name"]
-                    description = data["description"]
-                    price = data["price"]
-                    event_timestamp = datetime.datetime.now()
-                    method = data["method"]
-
-                    with connection_read.cursor() as cursor:
-                        cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
-                        )
-
-                with connection_write:
-                    data = consumed_message
-                    user_id = data["user_id"]
-                    event_key = data["event_key"]
-                    name = data["name"]
-                    description = data["description"]
-                    price = data["price"]
-                    event_timestamp = datetime.datetime.now()
-                    method = data["method"]
-
-                    with connection_write.cursor() as cursor:
-                        cursor.execute(
-                            """INSERT INTO public.order (user_id, event_key, name, description, price, event_timestamp, method) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                            (user_id, event_key, name, description, price, event_timestamp, method),
-                        )
-     
-
-if __name__ == "__main__":
-    Order.consumerOrderDeleted()
+asyncio.run(OrderDeleted())
