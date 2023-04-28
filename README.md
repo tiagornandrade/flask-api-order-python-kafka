@@ -12,65 +12,49 @@ It is being built in:
 flowchart LR
 
 subgraph Publish1
-    1[create_order]
-end
-
-subgraph Publish2
-    2[delete_order]
+    1[producer_order]
 end
 
 subgraph Broker/Topic
     a[create_order_topic]
-end
-
-subgraph Broker/Topic
     b[delete_order_topic]
+    c[update_order_topic]
 end
 
 subgraph Subscriber1
-    order_created
+    order
 end
 
 subgraph Subscriber2
-    order_deleted
-end
-
-subgraph Subscriber3
-    transaction_created
-end
-
-subgraph Subscriber4
-    transaction_deleted
+    transaction
 end
 
 1 --> a
-2 --> b
+1 --> b
+1 --> c
 a --> Subscriber1
+a --> Subscriber2
+b --> Subscriber1
 b --> Subscriber2
-a --> Subscriber3
-b --> Subscriber4
+c --> Subscriber1
+c --> Subscriber2
 ```
 
 ## Schemas
 ```mermaid
 erDiagram
 
-order_created {
-    TEXT id
-	TEXT name
+order {
+    TEXT user_id
+    TEXT event_key
+	TEXT product_name
     TEXT description
     FLOAT price
+    TIMESTAMP event_timestamp
+    TEXT operation
 }
 
-order_deleted {
-    TEXT id
-    TEXT id_created
-	TEXT name
-    TEXT description
-    FLOAT price
-}
-
-transaction_created {
+transaction {
     TEXT trsansaction_id
 	JSON trsansaction
 }
@@ -79,22 +63,34 @@ transaction_created {
 
 ## Script
 ```sql
-CREATE table if not EXISTS order_created (
-	id TEXT,
-	name TEXT,
-    	description TEXT,
-    	price FLOAT
+database_1
+CREATE table if not EXISTS public.order (
+        user_id TEXT,
+        event_key TEXT,
+        product_name TEXT,
+        description TEXT,
+        price FLOAT,
+        event_timestamp TIMESTAMP,
+        operation TEXT
 );
 
-CREATE table if not EXISTS order_deleted (
-	id TEXT,
-	id_created TEXT,
-	name TEXT,
-    description TEXT,
-    price FLOAT
+CREATE table if not EXISTS transaction (
+	trsansaction_id TEXT,
+	transaction json
 );
 
-CREATE table if not EXISTS transaction_created (
+database_2
+CREATE table if not EXISTS public.order (
+        user_id TEXT,
+        event_key TEXT,
+        product_name TEXT,
+        description TEXT,
+        price FLOAT,
+        event_timestamp TIMESTAMP,
+        operation TEXT
+);
+
+CREATE table if not EXISTS transaction (
 	trsansaction_id TEXT,
 	transaction json
 );

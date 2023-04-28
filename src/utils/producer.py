@@ -15,42 +15,42 @@ producer_order = KafkaProducer(retries=5, bootstrap_servers=bootstrap_servers)
 class MessageCreated:
     user_id: str
     event_key: str
-    name: str
+    product_name: str
     description: str
     price: float
-    method: str
+    operation: str
 
 @dataclass
 class MessageDeleted:
     user_id: str
     event_key: str
-    name: str
+    product_name: str
     description: str
     price: float
-    method: str
+    operation: str
 
 @dataclass
 class MessageUpdated:
     user_id: str
     event_key: str
-    name: str
+    product_name: str
     description: str
     price: float
-    method: str
+    operation: str
 
 
 def producerCreated(message):
     data = message
     msg_created = MessageCreated(
-        str(uuid4()), str(uuid4()), data["name"], data["description"], data["price"], str("POST")
+        str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("POST")
     )
     message = {
         "user_id": msg_created.user_id,
         "event_key": msg_created.event_key,
-        "name": msg_created.name,
+        "product_name": msg_created.product_name,
         "description": msg_created.description,
         "price": msg_created.price,
-        "method": msg_created.price,
+        "operation": msg_created.price,
     }
 
     future = producer_order.send(
@@ -64,15 +64,15 @@ def producerCreated(message):
 def producerDeleted(message):
     data = message
     msg_created = MessageCreated(
-        str(uuid4()), str(uuid4()), data["name"], data["description"], data["price"], str("DELETE")
+        str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("DELETE")
     )
     message = {
         "user_id": msg_created.user_id,
         "event_key": msg_created.event_key,
-        "name": msg_created.name,
+        "product_name": msg_created.product_name,
         "description": msg_created.description,
         "price": msg_created.price,
-        "method": msg_created.price,
+        "operation": msg_created.price,
     }
 
     future = producer_order.send(
@@ -86,15 +86,15 @@ def producerDeleted(message):
 def producerUpdated(message):
     data = message
     msg_created = MessageCreated(
-        str(uuid4()), str(uuid4()), data["name"], data["description"], data["price"], str("PUT")
+        str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("PUT")
     )
     message = {
         "user_id": msg_created.user_id,
         "event_key": msg_created.event_key,
-        "name": msg_created.name,
+        "product_name": msg_created.product_name,
         "description": msg_created.description,
         "price": msg_created.price,
-        "method": msg_created.price,
+        "operation": msg_created.price,
     }
 
     future = producer_order.send(
