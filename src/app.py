@@ -5,13 +5,6 @@ from utils.producer import producerCreated, producerDeleted, producerUpdated
 
 app = Flask(__name__)
 
-ORDER_CREATED_KAFKA_TOPIC = "order_created"
-ORDER_UPDATED_KAFKA_TOPIC = "order_updated"
-ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
-bootstrap_servers = "localhost:9092"
-
-producer_order = KafkaProducer(retries=5, bootstrap_servers=bootstrap_servers)
-
 
 @app.route("/order/create_item", methods=["POST"])
 def create_item():
