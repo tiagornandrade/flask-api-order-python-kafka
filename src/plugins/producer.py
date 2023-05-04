@@ -42,7 +42,7 @@ class MessageUpdated:
 def producer_created(message):
     data = message
     msg_created = MessageCreated(
-        str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("POST")
+        str(uuid4()), str(uuid4()), data["name"], data["description"], data["price"], str("POST")
     )
     message = {
         "user_id": msg_created.user_id,
@@ -64,7 +64,7 @@ def producer_created(message):
 def producer_deleted(message):
     data = message
     msg_created = MessageCreated(
-        str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("DELETE")
+        str(uuid4()), str(uuid4()), data["name"], data["description"], data["price"], str("DELETE")
     )
     message = {
         "user_id": msg_created.user_id,
@@ -86,7 +86,7 @@ def producer_deleted(message):
 def producer_updated(message):
     data = message
     msg_created = MessageCreated(
-        str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("PUT")
+        str(uuid4()), str(uuid4()), data["name"], data["description"], data["price"], str("PUT")
     )
     message = {
         "user_id": msg_created.user_id,

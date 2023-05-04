@@ -1,5 +1,5 @@
 import asyncio
-from src.pub_sub.consumer import Order
+from src.plugins.consumer import Order
 
 
 async def order_updated():
