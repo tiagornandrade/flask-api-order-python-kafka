@@ -1,5 +1,5 @@
 import asyncio
-from src.pub_sub.consumer import Order
+from consumer import Order
 
 
 async def order_created():
