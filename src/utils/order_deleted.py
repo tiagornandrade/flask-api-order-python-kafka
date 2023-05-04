@@ -1,8 +1,8 @@
 import asyncio
-from consumer import Order
+from src.pub_sub.consumer import Order
 
 
-async def OrderDeleted():
-    await asyncio.create_task(Order.consumerOrderDeleted())
+async def order_deleted():
+    await asyncio.create_task(Order.consumer_order_deleted())
 
-asyncio.run(OrderDeleted())
+asyncio.run(order_deleted())

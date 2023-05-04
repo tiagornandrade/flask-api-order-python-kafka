@@ -1,6 +1,5 @@
-from kafka import KafkaProducer
 from flask import Flask, request, jsonify
-from utils.producer import producerCreated, producerDeleted, producerUpdated
+from src.pub_sub.producer import producer_created, producer_deleted, producer_updated
 
 
 app = Flask(__name__)
@@ -10,14 +9,14 @@ app = Flask(__name__)
 def create_item():
     if request.method == "POST":
         data = request.get_json()
-        producerCreated(data)
+        producer_created(data)
         return jsonify({'message': 'Dado inserido com sucesso!'})
 
 @app.route("/order/update_item", methods=["PUT"])
 def update_item():
     if request.method == "PUT":
         data = request.get_json()
-        producerUpdated(data)
+        producer_updated(data)
     return jsonify({'message': 'Dado atualizado com sucesso!'})
 
 
@@ -25,7 +24,7 @@ def update_item():
 def delete_item():
     if request.method == "DELETE":
         data = request.get_json()
-        producerDeleted(data)
+        producer_deleted(data)
     return jsonify({'message': 'Dado excluido com sucesso!'})
 
 
