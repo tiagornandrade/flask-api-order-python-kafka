@@ -3,7 +3,7 @@ import datetime
 from uuid import uuid4
 from kafka import KafkaConsumer
 from psycopg2.extras import Json
-from dbConnect import connectionRead, connectionWrite
+from src.utils.dbConnect import connectionRead, connectionWrite
 
 
 connection_read = connectionRead()
@@ -21,7 +21,7 @@ consumer_order_updated = KafkaConsumer(ORDER_UPDATED_KAFKA_TOPIC, bootstrap_serv
 
 
 class Order:
-    def consumerOrderCreated():
+    def consumer_order_created():
         while True:
             for message in consumer_order_created:
                 print("Gonna start listening..")
@@ -61,7 +61,7 @@ class Order:
                             (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )
 
-    def consumerOrderDeleted():
+    def consumer_order_deleted():
         while True:
             for message in consumer_order_deleted:
                 print("Gonna start listening..")
@@ -101,7 +101,7 @@ class Order:
                             (user_id, event_key, product_name, description, price, event_timestamp, operation),
                         )
 
-    def consumerOrderUpdated():
+    def consumer_order_updated():
         while True:
             for message in consumer_order_updated:
                 print("Gonna start listening..")

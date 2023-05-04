@@ -1,8 +1,8 @@
 import asyncio
-from consumer import Order
+from src.pub_sub.consumer import Order
 
 
-async def OrderCreated():
-    await asyncio.create_task(Order.consumerOrderCreated())
+async def order_created():
+    await asyncio.create_task(Order.consumer_order_created())
 
-asyncio.run(OrderCreated())
+asyncio.run(order_created())
