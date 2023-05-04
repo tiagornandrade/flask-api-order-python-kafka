@@ -39,7 +39,7 @@ class MessageUpdated:
     operation: str
 
 
-def producerCreated(message):
+def producer_created(message):
     data = message
     msg_created = MessageCreated(
         str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("POST")
@@ -61,7 +61,7 @@ def producerCreated(message):
     return future
 
 
-def producerDeleted(message):
+def producer_deleted(message):
     data = message
     msg_created = MessageCreated(
         str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("DELETE")
@@ -83,7 +83,7 @@ def producerDeleted(message):
     return future
 
 
-def producerUpdated(message):
+def producer_updated(message):
     data = message
     msg_created = MessageCreated(
         str(uuid4()), str(uuid4()), data["product_name"], data["description"], data["price"], str("PUT")
