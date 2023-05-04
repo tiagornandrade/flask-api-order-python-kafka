@@ -1,13 +1,11 @@
 import json
 import datetime
-from uuid import uuid4
 from kafka import KafkaConsumer
-from psycopg2.extras import Json
-from src.utils.dbConnect import connectionRead, connectionWrite
+from src.utils.database.dbConnect import connection_read, connection_write
 
 
-connection_read = connectionRead()
-connection_write = connectionWrite()
+connection_read = connection_read()
+connection_write = connection_write()
 
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
 ORDER_DELETED_KAFKA_TOPIC = "order_deleted"

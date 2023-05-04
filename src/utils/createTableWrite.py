@@ -1,7 +1,7 @@
-from dbConnect import connectionWrite
+from src.utils.database.dbConnect import connection_write
 
 
-connection = connectionWrite()
+connection = connection_write()
 
 CREATE_ORDER_TABLE = """
     CREATE table if not EXISTS public.order (
