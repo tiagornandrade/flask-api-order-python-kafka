@@ -1,7 +1,7 @@
 import json
 import datetime
 from kafka import KafkaConsumer
-from src.utils.database.dbConnect import connection_read, connection_write
+from dbConnect import connection_read, connection_write
 
 
 connection_read = connection_read()
