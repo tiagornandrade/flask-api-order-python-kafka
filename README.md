@@ -59,10 +59,3 @@ transaction {
 	JSON trsansaction
 }
 ```
-
-
-
-	trsansaction_id TEXT,
-	transaction json
-);
-```
