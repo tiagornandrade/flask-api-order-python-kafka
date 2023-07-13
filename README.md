@@ -61,36 +61,7 @@ transaction {
 ```
 
 
-## Script
-```sql
-database_1
-CREATE table if not EXISTS public.order (
-        user_id TEXT,
-        event_key TEXT,
-        product_name TEXT,
-        description TEXT,
-        price FLOAT,
-        event_timestamp TIMESTAMP,
-        operation TEXT
-);
 
-CREATE table if not EXISTS transaction (
-	trsansaction_id TEXT,
-	transaction json
-);
-
-database_2
-CREATE table if not EXISTS public.order (
-        user_id TEXT,
-        event_key TEXT,
-        product_name TEXT,
-        description TEXT,
-        price FLOAT,
-        event_timestamp TIMESTAMP,
-        operation TEXT
-);
-
-CREATE table if not EXISTS transaction (
 	trsansaction_id TEXT,
 	transaction json
 );
