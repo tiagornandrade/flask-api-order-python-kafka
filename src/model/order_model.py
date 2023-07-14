@@ -1,9 +1,11 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime
 
 
+ENGINE = os.environ.get("ENGINE")
 
 Base = declarative_base()
 
@@ -20,7 +22,7 @@ class Order(Base):
 
 
 def orderGetItem():
-    engine = create_engine('postgresql://postgres:postgres@localhost:54322/postgres')
+    engine = create_engine(ENGINE)
     Session = sessionmaker(bind=engine)
     session = Session()
 
