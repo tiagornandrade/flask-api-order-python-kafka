@@ -1,11 +1,15 @@
 import logging
 from logging.config import fileConfig
 import re
+import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+
+engine1_url = os.environ.get('ENGINE1_DATABASE_URL')
+engine2_url = os.environ.get('ENGINE2_DATABASE_URL')
 
 USE_TWOPHASE = False
 
@@ -80,28 +84,31 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
-
-    # for the direct-to-DB use case, start a transaction on all
-    # engines, then run all migrations, then commit all transactions.
-
+    """Run migrations in 'online' mode."""
     engines = {}
+
     for name in re.split(r",\s*", db_names):
         engines[name] = rec = {}
-        rec["engine"] = engine_from_config(
-            context.config.get_section(name, {}),
-            prefix="sqlalchemy.",
-            poolclass=pool.NullPool,
-        )
+        if name == 'engine1':
+            rec["engine"] = engine_from_config(
+                {'sqlalchemy.url': engine1_url},
+                prefix="sqlalchemy.",
+                poolclass=pool.NullPool,
+            )
+        elif name == 'engine2':
+            rec["engine"] = engine_from_config(
+                {'sqlalchemy.url': engine2_url},
+                prefix="sqlalchemy.",
+                poolclass=pool.NullPool,
+            )
+        else:
+            rec["engine"] = engine_from_config(
+                context.config.get_section(name, {}),
+                prefix="sqlalchemy.",
+                poolclass=pool.NullPool,
+            )
 
-    for name, rec in engines.items():
-        engine = rec["engine"]
-        rec["connection"] = conn = engine.connect()
+        rec["connection"] = conn = rec["engine"].connect()
 
         if USE_TWOPHASE:
             rec["transaction"] = conn.begin_twophase()
@@ -110,7 +117,6 @@ def run_migrations_online() -> None:
 
     try:
         for name, rec in engines.items():
-            logger.info("Migrating database %s" % name)
             context.configure(
                 connection=rec["connection"],
                 upgrade_token="%s_upgrades" % name,
