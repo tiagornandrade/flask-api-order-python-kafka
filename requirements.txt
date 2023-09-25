@@ -128,3 +128,5 @@ widgetsnbextension==4.0.5
 confluent-kafka==2.2.0
 envyaml~=1.10.211231
 dbConnect~=2.1
+SQLAlchemy~=2.0.19
+redis~=5.0.0
