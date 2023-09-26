@@ -31,6 +31,7 @@ def upgrade_engine1() -> None:
     op.create_table(
         'order',
         sa.Column('user_id', sa.Text),
+        sa.Column('order_id', sa.Text),
         sa.Column('event_key', sa.Text),
         sa.Column('product_name', sa.Text),
         sa.Column('description', sa.Text),
@@ -48,6 +49,7 @@ def upgrade_engine2() -> None:
     op.create_table(
         'order',
         sa.Column('user_id', sa.Text),
+        sa.Column('order_id', sa.Text),
         sa.Column('event_key', sa.Text),
         sa.Column('product_name', sa.Text),
         sa.Column('description', sa.Text),
