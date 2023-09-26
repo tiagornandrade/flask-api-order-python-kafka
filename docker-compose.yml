@@ -24,24 +24,17 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
   
-  # kafdrop:
-  #   image: obsidiandynamics/kafdrop:latest
-  #   networks: 
-  #     - broker-kafka
-  #   depends_on:
-  #     - kafka
-  #   ports:
-  #     - 19000:9000
-  #   environment:
-  #     KAFKA_BROKERCONNECT: kafka:29092
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    networks:
+      - broker-kafka
+    depends_on:
+      - kafka
+    ports:
+      - 19000:9000
+    environment:
+      KAFKA_BROKERCONNECT: kafka:29092
 
-  # rabbitmq:
-  #   image: rabbitmq:management-alpine
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  #   networks:
-  #     - rabbitmq_go_net
   postgres-1:
     image: postgres:13
     environment:
@@ -52,6 +45,7 @@ services:
       - postgres-db-volume-1:/var/lib/postgresql/data
     ports:
       - 54321:5432
+
   postgres-2:
     image: postgres:13
     environment:
@@ -62,6 +56,13 @@ services:
       - postgres-db-volume-2:/var/lib/postgresql/data
     ports:
       - 54322:5432
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - broker-kafka
 
 volumes:
   postgres-db-volume-1:
