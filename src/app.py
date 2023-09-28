@@ -1,6 +1,6 @@
 from flask import Flask
 
-from src.views import routes
+from src.controller import routes
 
 app = Flask(__name__)
 routes.init_app(app)

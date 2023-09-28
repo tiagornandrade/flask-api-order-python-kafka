@@ -1,6 +1,6 @@
 import os
-from sqlalchemy import create_engine, Column, JSON, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
+from src.entity.transaction_entity import Transaction
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 
@@ -8,15 +8,8 @@ load_dotenv()
 
 ENGINE = os.environ.get("ENGINE1_DATABASE_URL")
 
-Base = declarative_base()
 engine = create_engine(ENGINE)
 Session = sessionmaker(bind=engine)
-
-
-class Transaction(Base):
-    __tablename__ = 'transaction'
-    transaction_id = Column(String, primary_key=True)
-    transaction = Column(JSON)
 
 
 class TransactionRepository:
