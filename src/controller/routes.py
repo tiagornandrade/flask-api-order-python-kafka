@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-from model.order_model import OrderRepository
-from model.transaction_model import TransactionRepository
+from repository.order_repository import OrderRepository
+from repository.transaction_repository import TransactionRepository
 from confluent_kafka import Producer
 from datetime import datetime
 import redis
