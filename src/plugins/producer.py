@@ -11,7 +11,7 @@ bootstrap_servers = "localhost:9092"
 producer_order = KafkaProducer(
     retries=5,
     bootstrap_servers=bootstrap_servers,
-    value_serializer=lambda v: json.dumps(v).encode("utf-8")
+    value_serializer=lambda v: json.dumps(v).encode("utf-8"),
 )
 
 
@@ -32,13 +32,13 @@ def produce_message(message_type, data):
         data["name"],
         data["description"],
         data["price"],
-        message_type
+        message_type,
     )
 
     topic = {
         "created": ORDER_CREATED_KAFKA_TOPIC,
         "updated": ORDER_UPDATED_KAFKA_TOPIC,
-        "deleted": ORDER_DELETED_KAFKA_TOPIC
+        "deleted": ORDER_DELETED_KAFKA_TOPIC,
     }.get(message_type)
 
     future = producer_order.send(topic, msg.__dict__)

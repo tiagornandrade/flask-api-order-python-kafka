@@ -11,6 +11,7 @@ ENGINE = os.environ.get("ENGINE1_DATABASE_URL")
 engine = create_engine(ENGINE)
 Session = sessionmaker(bind=engine)
 
+
 class OrderRepository:
     def __init__(self):
         self.session = Session()
@@ -26,13 +27,13 @@ class OrderRepository:
         result = []
         for order in orders:
             order_data = {
-                'order_id': order.order_id,
-                'event_key': order.event_key,
-                'product_name': order.product_name,
-                'description': order.description,
-                'price': order.price,
-                'event_timestamp': order.event_timestamp.isoformat(),
-                'operation': order.operation
+                "order_id": order.order_id,
+                "event_key": order.event_key,
+                "product_name": order.product_name,
+                "description": order.description,
+                "price": order.price,
+                "event_timestamp": order.event_timestamp.isoformat(),
+                "operation": order.operation,
             }
             result.append(order_data)
         return result
@@ -42,13 +43,13 @@ class OrderRepository:
             order = self.session.query(Order).filter_by(order_id=id).first()
             if order:
                 return {
-                    'order_id': order.order_id,
-                    'event_key': order.event_key,
-                    'product_name': order.product_name,
-                    'description': order.description,
-                    'price': order.price,
-                    'event_timestamp': order.event_timestamp,
-                    'operation': order.operation
+                    "order_id": order.order_id,
+                    "event_key": order.event_key,
+                    "product_name": order.product_name,
+                    "description": order.description,
+                    "price": order.price,
+                    "event_timestamp": order.event_timestamp,
+                    "operation": order.operation,
                 }
         except Exception as e:
             self.session.rollback()

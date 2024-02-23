@@ -21,8 +21,8 @@ class TransactionRepository:
         result = []
         for transaction in transactions:
             transaction_data = {
-                'transaction_id': transaction.transaction_id,
-                'transaction': transaction.transaction
+                "transaction_id": transaction.transaction_id,
+                "transaction": transaction.transaction,
             }
             result.append(transaction_data)
         return result

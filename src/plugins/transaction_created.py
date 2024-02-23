@@ -13,9 +13,15 @@ ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
 ORDER_CONFIRMED_KAFKA_TOPIC = "order_confirmed"
 bootstrap_servers = "localhost:9092"
 
-consumer_order_created = KafkaConsumer(ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
-consumer_order_deleted = KafkaConsumer(ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
-consumer_transaction = KafkaConsumer(ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
+consumer_order_created = KafkaConsumer(
+    ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
+consumer_order_deleted = KafkaConsumer(
+    ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
+consumer_transaction = KafkaConsumer(
+    ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
 
 
 class Transaction:
@@ -74,7 +80,6 @@ class Transaction:
                                 ),
                             ),
                         )
-
 
 
 if __name__ == "__main__":
