@@ -7,7 +7,7 @@ Base = declarative_base()
 
 
 class Order(Base):
-    __tablename__ = 'order'
+    __tablename__ = "order"
 
     user_id = Column(Integer, primary_key=True)
     order_id = Column(UUID(as_uuid=True), unique=True, nullable=False)

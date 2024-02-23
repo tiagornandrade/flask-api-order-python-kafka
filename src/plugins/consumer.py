@@ -9,9 +9,15 @@ ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
 ORDER_UPDATED_KAFKA_TOPIC = "order_updated"
 bootstrap_servers = "localhost:9092"
 
-consumer_order_created = KafkaConsumer(ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
-consumer_order_deleted = KafkaConsumer(ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
-consumer_order_updated = KafkaConsumer(ORDER_UPDATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
+consumer_order_created = KafkaConsumer(
+    ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
+consumer_order_deleted = KafkaConsumer(
+    ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
+consumer_order_updated = KafkaConsumer(
+    ORDER_UPDATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
 
 connection_read = connection_read()
 connection_write = connection_write()
@@ -38,13 +44,29 @@ class Order:
             with connection_read, connection_read.cursor() as read_cursor:
                 read_cursor.execute(
                     """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                    (user_id, event_key, product_name, description, price, event_timestamp, operation),
+                    (
+                        user_id,
+                        event_key,
+                        product_name,
+                        description,
+                        price,
+                        event_timestamp,
+                        operation,
+                    ),
                 )
 
             with connection_write, connection_write.cursor() as write_cursor:
                 write_cursor.execute(
                     """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                    (user_id, event_key, product_name, description, price, event_timestamp, operation),
+                    (
+                        user_id,
+                        event_key,
+                        product_name,
+                        description,
+                        price,
+                        event_timestamp,
+                        operation,
+                    ),
                 )
 
     @staticmethod

@@ -15,8 +15,13 @@ ORDER_CREATED_KAFKA_TOPIC = "order_created"
 ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
 ORDER_CONFIRMED_KAFKA_TOPIC = "order_confirmed"
 
-consumer_order_created = KafkaConsumer(ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
-consumer_order_deleted = KafkaConsumer(ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
+consumer_order_created = KafkaConsumer(
+    ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
+consumer_order_deleted = KafkaConsumer(
+    ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
+
 
 class Order:
     def consumerOrderCreated():
@@ -39,9 +44,17 @@ class Order:
                     with connection.cursor() as cursor:
                         cursor.execute(
                             """INSERT INTO public.order (id, name, description, price, is_created, is_updated, is_deleted) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id;""",
-                            (id, name, description, price, is_created, is_updated, is_deleted),
+                            (
+                                id,
+                                name,
+                                description,
+                                price,
+                                is_created,
+                                is_updated,
+                                is_deleted,
+                            ),
                         )
-    
+
     def consumerOrderDeleted():
         while True:
             for message in consumer_order_deleted:
@@ -61,6 +74,14 @@ class Order:
 
                     with connection.cursor() as cursor:
                         cursor.execute(
-                             """INSERT INTO public.order (id, name, description, price, is_created, is_updated, is_deleted) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id;""",
-                            (id, name, description, price, is_created, is_updated, is_deleted),
+                            """INSERT INTO public.order (id, name, description, price, is_created, is_updated, is_deleted) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id;""",
+                            (
+                                id,
+                                name,
+                                description,
+                                price,
+                                is_created,
+                                is_updated,
+                                is_deleted,
+                            ),
                         )

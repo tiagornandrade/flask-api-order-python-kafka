@@ -9,12 +9,14 @@ app = Flask(__name__)
 def create_item():
     return redirect("http://localhost:5001/order/create_item")
 
+
 @app.route("/order/update_item", methods=["POST"])
 def update_item():
     if request.method == "POST":
         content = request.get_json()
         producerCreated(content)
     return jsonify(content)
+
 
 @app.route("/order/delete_item", methods=["POST"])
 def delete_item():

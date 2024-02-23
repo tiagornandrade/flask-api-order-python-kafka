@@ -10,6 +10,7 @@ from uuid import uuid4
 app = Flask(__name__)
 connection = connectionWrite()
 
+
 @app.route("/order/create_item", methods=["POST"])
 def create_item():
     if request.method == "POST":
@@ -31,6 +32,7 @@ def create_item():
         producerCreated(content)
     return jsonify(content)
 
+
 @app.route("/order/delete_item/<id>", methods=["DELETE"])
 def delete_item(id):
     with connection.cursor() as cursor:
@@ -44,11 +46,13 @@ def delete_item(id):
             cursor.close()
             response_itens = [row_to_dict_order(x) for x in get_itens]
     producerDeleted(response_itens)
-    return jsonify({'registry':'deleted'})
+    return jsonify({"registry": "deleted"})
+
 
 @app.route("/order/get_item", methods=["GET"])
 def order_get_item():
     return orderGetItem()
+
 
 @app.route("/order/get_item/<id>", methods=["GET"])
 def order_get_item_by_id(id):
@@ -68,7 +72,7 @@ def row_to_dict_order(row):
             "name": row["name"],
             "description": row["description"],
             "price": row["price"],
-            "created_at": row["created_at"]
+            "created_at": row["created_at"],
         }
     )
 

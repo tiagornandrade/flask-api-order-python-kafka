@@ -14,7 +14,10 @@ bootstrap_servers = env["BOOTSTRAP_SERVER"]
 ORDER_KAFKA_TOPIC = "order_created"
 ORDER_CONFIRMED_KAFKA_TOPIC = "order_confirmed"
 
-consumer_transaction = KafkaConsumer(ORDER_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers)
+consumer_transaction = KafkaConsumer(
+    ORDER_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
+)
+
 
 def consumerTransactionCreated():
     while True:
