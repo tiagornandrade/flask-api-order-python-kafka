@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -9,7 +9,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-enterprise-kafka:latest
     networks: 
       - broker-kafka
     depends_on:
@@ -22,7 +22,21 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      LOG_LEVEL: DEBUG
   
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
@@ -35,38 +49,64 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
 
-  postgres-1:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: market_db
+  postgresql-primary:
+    image: bitnami/postgresql:latest
+    restart: always
+    ports:
+      - '5432:5432'
     volumes:
-      - postgres-db-volume-1:/var/lib/postgresql/data
-    ports:
-      - 54321:5432
-
-  postgres-2:
-    image: postgres:13
+      - postgresql_master_data:/bitnami/postgresql
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: market_db_read
-    volumes:
-      - postgres-db-volume-2:/var/lib/postgresql/data
-    ports:
-      - 54322:5432
+      POSTGRESQL_PGAUDIT_LOG: READ,WRITE
+      POSTGRESQL_LOG_HOSTNAME: "true"
+      POSTGRESQL_REPLICATION_MODE: master
+      POSTGRESQL_REPLICATION_USER: repl_user
+      POSTGRESQL_REPLICATION_PASSWORD: repl_user
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: postgres
+      POSTGRESQL_DATABASE: postgres
+      ALLOW_EMPTY_PASSWORD: "yes"
 
-  redis:
-    image: redis:latest
+  postgresql-replica:
+    image: bitnami/postgresql:latest
+    restart: always
     ports:
-      - 6379:6379
-    networks:
-      - broker-kafka
+      - '5433:5432'
+    depends_on:
+      - postgresql-primary
+    environment:
+      POSTGRESQL_PASSWORD: postgres
+      POSTGRESQL_MASTER_HOST: postgresql-primary
+      POSTGRESQL_PGAUDIT_LOG: READ
+      POSTGRESQL_LOG_HOSTNAME: "true"
+      POSTGRESQL_REPLICATION_MODE: slave
+      POSTGRESQL_REPLICATION_USER: repl_user
+      POSTGRESQL_REPLICATION_PASSWORD: repl_user
+      POSTGRESQL_MASTER_PORT_NUMBER: 5432
+      ALLOW_EMPTY_PASSWORD: "yes"
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    restart: always
+    ports:
+      - '6432:6432'
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: postgresql-primary
+      DB_PORT: 5432
+      POOL_MODE: session
+      MAX_CLIENT_CONN: 100
+      DEFAULT_POOL_SIZE: 20
+      AUTH_TYPE: md5
+      AUTH_FILE: /etc/pgbouncer/users.txt
+    volumes:
+      - ./pgbouncer/users.txt:/etc/pgbouncer/users.txt
 
 volumes:
-  postgres-db-volume-1:
-  postgres-db-volume-2:
+  postgresql_master_data:
+    driver: local
 
 networks: 
   broker-kafka:
