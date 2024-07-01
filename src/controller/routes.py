@@ -30,7 +30,7 @@ def init_app(app: Flask):
         order_id = str(uuid.uuid4())
         redis_key = f"item_{order_id}"
         data["order_id"] = order_id
-        redis_client.set(redis_key, json.dumps(data))
+        # redis_client.set(redis_key, json.dumps(data))
 
         kafka_payload = {
             "payload": data,

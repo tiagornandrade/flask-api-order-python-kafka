@@ -1,7 +1,12 @@
+import os
 import json
 import datetime
 from kafka import KafkaConsumer
-from dbConnect import connection_read, connection_write
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
@@ -19,13 +24,16 @@ consumer_order_updated = KafkaConsumer(
     ORDER_UPDATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
 )
 
-connection_read = connection_read()
-connection_write = connection_write()
+ENGINE = os.environ.get("ENGINE_DATABASE_URL")
+
+engine = create_engine(ENGINE)
+Session = sessionmaker(bind=engine)
 
 
 class Order:
     @staticmethod
     def consume_messages(consumer):
+        session = Session()
         for message in consumer:
             print("Gonna start listening..")
             print("Ongoing transaction..")
@@ -33,41 +41,37 @@ class Order:
             print(consumed_message)
 
             data = consumed_message
-            user_id = data["user_id"]
-            event_key = data["event_key"]
-            product_name = data["product_name"]
-            description = data["description"]
-            price = data["price"]
+            user_id = data.get("user_id")
+            event_key = data.get("event_key")
+            product_name = data.get("product_name")
+            description = data.get("description")
+            price = data.get("price")
             event_timestamp = datetime.datetime.now()
-            operation = data["operation"]
+            operation = data.get("operation")
 
-            with connection_read, connection_read.cursor() as read_cursor:
-                read_cursor.execute(
-                    """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                    (
-                        user_id,
-                        event_key,
-                        product_name,
-                        description,
-                        price,
-                        event_timestamp,
-                        operation,
-                    ),
-                )
+            order_data = {
+                "user_id": user_id,
+                "event_key": event_key,
+                "product_name": product_name,
+                "description": description,
+                "price": price,
+                "event_timestamp": event_timestamp,
+                "operation": operation,
+            }
 
-            with connection_write, connection_write.cursor() as write_cursor:
-                write_cursor.execute(
-                    """INSERT INTO public.order (user_id, event_key, product_name, description, price, event_timestamp, operation) VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING user_id;""",
-                    (
-                        user_id,
-                        event_key,
-                        product_name,
-                        description,
-                        price,
-                        event_timestamp,
-                        operation,
-                    ),
+            try:
+                session.execute(
+                    """INSERT INTO public.orders (user_id, event_key, product_name, description, price, event_timestamp, operation)
+                       VALUES (:user_id, :event_key, :product_name, :description, :price, :event_timestamp, :operation)
+                       RETURNING user_id;""",
+                    order_data
                 )
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                print(f"Error inserting order: {e}")
+            finally:
+                session.close()
 
     @staticmethod
     def consumer_order_created():
