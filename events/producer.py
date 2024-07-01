@@ -1,48 +1,44 @@
 import json
-from uuid import uuid4
-from kafka import KafkaProducer
-from dataclasses import dataclass
+from confluent_kafka import Producer
+from datetime import datetime
+import uuid
 
 
-ORDER_CREATED_KAFKA_TOPIC = "order_created"
-ORDER_UPDATED_KAFKA_TOPIC = "order_updated"
-ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
 bootstrap_servers = "localhost:9092"
-
-producer_order = KafkaProducer(
-    retries=5,
-    bootstrap_servers=bootstrap_servers,
-    value_serializer=lambda v: json.dumps(v).encode("utf-8"),
-)
+producer = Producer({"bootstrap.servers": bootstrap_servers})
 
 
-@dataclass
-class Message:
-    user_id: str
-    event_key: str
-    product_name: str
-    description: str
-    price: float
-    operation: str
+def produce_message(topic, key, value):
+    producer.produce(topic, key=key, value=value)
+    producer.flush()
 
 
-def produce_message(message_type, data):
-    msg = Message(
-        str(uuid4()),
-        str(uuid4()),
-        data["name"],
-        data["description"],
-        data["price"],
-        message_type,
-    )
+def produce_create_order_message(data):
+    order_id = str(uuid.uuid4())
+    data["order_id"] = order_id
 
-    topic = {
-        "created": ORDER_CREATED_KAFKA_TOPIC,
-        "updated": ORDER_UPDATED_KAFKA_TOPIC,
-        "deleted": ORDER_DELETED_KAFKA_TOPIC,
-    }.get(message_type)
+    kafka_payload = {
+        "payload": data,
+        "is_deleted": False,
+        "created_at": datetime.now().isoformat(),
+    }
 
-    future = producer_order.send(topic, msg.__dict__)
-    producer_order.flush()
-    future.get(timeout=60)
-    return future
+    produce_message("order_created", key="create", value=json.dumps(kafka_payload))
+    return order_id
+
+
+def produce_update_order_message(user_id, data):
+
+    kafka_payload = {
+        "payload": data,
+        "is_deleted": False,
+        "updated_at": datetime.now().isoformat(),
+    }
+
+    produce_message("order_updated", key="update", value=json.dumps(kafka_payload))
+    return True
+
+
+def produce_delete_order_message(order_id):
+    produce_message("order_deleted", key="delete", value=str({"id": order_id, "is_deleted": True}))
+    return True
