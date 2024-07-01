@@ -3,6 +3,7 @@ from uuid import uuid4
 from kafka import KafkaProducer
 from dataclasses import dataclass
 
+
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
 ORDER_UPDATED_KAFKA_TOPIC = "order_updated"
 ORDER_DELETED_KAFKA_TOPIC = "order_deleted"

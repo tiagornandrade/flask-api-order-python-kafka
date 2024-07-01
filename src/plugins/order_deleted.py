@@ -1,5 +1,5 @@
 import asyncio
-from consumer import Order
+from events.consumer import Order
 
 
 async def order_deleted():

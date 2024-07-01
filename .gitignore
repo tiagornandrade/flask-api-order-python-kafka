@@ -1,2 +1,7 @@
 .env
 .idea/*
+/.idea/*
+/.obsidian
+/.idea
+/.vscode
+/__pycache__
