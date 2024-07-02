@@ -7,11 +7,11 @@ up:
 down:
 	docker-compose down
 
+python-path: 
+	export PYTHONPATH=$PYTHONPATH:$$(pwd)
+
 run:
 	python3 src/app.py
 
 consumer:
 	python3 events/consumer.py
-
-python-path: 
-	export PYTHONPATH=$PYTHONPATH:$$(pwd)

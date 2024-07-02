@@ -1,51 +1,42 @@
-from pyflink.datastream import StreamExecutionEnvironment
-from pyflink.table import StreamTableEnvironment
-from pyflink.table.descriptors import Kafka, Json, Schema
-from pyflink.table.udf import ScalarFunction
-from pyflink.table.window import Tumble
+import os
+from apache_beam import Pipeline, Map
+from apache_beam.io.kafka import ReadFromKafka
+from apache_beam.options.pipeline_options import PipelineOptions
+from apache_beam.io.jdbc import WriteToJdbc
 
 
-class OrderConsumerFunction(ScalarFunction):
-    def eval(self, value):
-        print(value)
+def process(element):
+    return f"Processed: {element}"
 
+def run_pipeline():
+    pipeline_options = PipelineOptions()
 
-def create_flink_consumer():
-    env = StreamExecutionEnvironment.get_execution_environment()
-    t_env = StreamTableEnvironment.create(env)
+    with Pipeline(options=pipeline_options) as pipeline:
+        kafka_config = {
+            "bootstrap.servers": "localhost:9092",
+            "group.id": "beam-group"
+        }
 
-    kafka_props = {
-        "bootstrap.servers": "localhost:9092",
-        "group.id": "flink_consumer_group",
-        "auto.offset.reset": "earliest",
-    }
-
-    schema = Schema()
-    schema.field("user_id", "STRING")
-    schema.field("event_key", "STRING")
-    schema.field("product_name", "STRING")
-    schema.field("description", "STRING")
-    schema.field("price", "DOUBLE")
-    schema.field("operation", "STRING")
-
-    t_env.connect(
-        Kafka()
-        .version("universal")
-        .topic("order_created")
-        .topic("order_deleted")
-        .topic("order_updated")
-        .properties(kafka_props)
-        .start_from_earliest()
-        .json_schema(schema)
-        .register_schema_as_table("orders")
-    )
-
-    t_env.from_path("orders").select("*").to_pandas().apply(
-        lambda row: OrderConsumerFunction().eval(row), axis=1
-    )
-
-    env.execute("Flink Kafka Consumer")
-
+        kafka_messages = (
+            pipeline
+            | ReadFromKafka(
+                consumer_config=kafka_config,
+                topics=["order_created"]
+            )
+            | Map(process)
+            | Map(lambda x: (x,))
+            | Map(lambda x: {'value': x})
+            | Map(lambda x: (x['value'],))
+            .with_output_types(str)
+            | WriteToJdbc(
+                table_name="orders",
+                driver_class_name='org.postgresql.Driver',
+                jdbc_url="jdbc:postgresql://localhost:5432/postgres",
+                username="postgres",
+                password="postgres",
+                statement=f"INSERT INTO raw.orders (value) VALUES (?)"
+            )
+        )
 
 if __name__ == "__main__":
-    create_flink_consumer()
+    run_pipeline()
