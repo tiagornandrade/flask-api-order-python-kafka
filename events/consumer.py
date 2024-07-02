@@ -1,86 +1,67 @@
 import os
 import json
-import datetime
-from kafka import KafkaConsumer
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from uuid import uuid4
 from dotenv import load_dotenv
+from kafka import KafkaConsumer
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text
 
 load_dotenv()
 
-
 ORDER_CREATED_KAFKA_TOPIC = "order_created"
-ORDER_DELETED_KAFKA_TOPIC = "order_deleted"
-ORDER_UPDATED_KAFKA_TOPIC = "order_updated"
 bootstrap_servers = "localhost:9092"
 
-consumer_order_created = KafkaConsumer(
-    ORDER_CREATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
-)
-consumer_order_deleted = KafkaConsumer(
-    ORDER_DELETED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
-)
-consumer_order_updated = KafkaConsumer(
-    ORDER_UPDATED_KAFKA_TOPIC, bootstrap_servers=bootstrap_servers
-)
-
-ENGINE = os.environ.get("ENGINE_DATABASE_URL")
-
-engine = create_engine(ENGINE)
+engine = create_engine(os.environ.get("ENGINE_DATABASE_URL"))
 Session = sessionmaker(bind=engine)
 
 
-class Order:
+class Transaction:
     @staticmethod
-    def consume_messages(consumer):
+    def consumer_transaction_created(only_create=False):
+        consumer = KafkaConsumer(
+            ORDER_CREATED_KAFKA_TOPIC, 
+            bootstrap_servers=bootstrap_servers,
+            group_id='my-group-id'
+        )
         session = Session()
-        for message in consumer:
-            print("Gonna start listening..")
-            print("Ongoing transaction..")
-            consumed_message = json.loads(message.value.decode("utf-8"))
-            print(consumed_message)
+        
+        while True:
+            for message in consumer:
+                print("Gonna start listening..")
+                print("Ongoing transaction..")
+                consumed_message = json.loads(message.value.decode("utf-8"))
+                print(consumed_message)
 
-            data = consumed_message
-            user_id = data.get("user_id")
-            event_key = data.get("event_key")
-            product_name = data.get("product_name")
-            description = data.get("description")
-            price = data.get("price")
-            event_timestamp = datetime.datetime.now()
-            operation = data.get("operation")
+                if only_create and message.key != b"create":
+                    continue
 
-            order_data = {
-                "user_id": user_id,
-                "event_key": event_key,
-                "product_name": product_name,
-                "description": description,
-                "price": price,
-                "event_timestamp": event_timestamp,
-                "operation": operation,
-            }
+                data = consumed_message["payload"]
+                id = data["order_id"]
+                transaction_id = str(uuid4())
+                name = data["product_name"]
+                description = data["description"]
+                price = data["price"]
 
-            try:
-                session.execute(
-                    """INSERT INTO public.orders (user_id, event_key, product_name, description, price, event_timestamp, operation)
-                       VALUES (:user_id, :event_key, :product_name, :description, :price, :event_timestamp, :operation)
-                       RETURNING user_id;""",
-                    order_data
-                )
-                session.commit()
-            except Exception as e:
-                session.rollback()
-                print(f"Error inserting order: {e}")
-            finally:
-                session.close()
+                transaction_data = {
+                    "transaction_id": transaction_id,
+                    "data": json.dumps({
+                        "id": id,
+                        "name": name,
+                        "description": description,
+                        "price": price
+                    })
+                }
 
-    @staticmethod
-    def consumer_order_created():
-        Order.consume_messages(consumer_order_created)
-
-    @staticmethod
-    def consumer_order_deleted():
-        Order.consume_messages(consumer_order_deleted)
-
-    @staticmethod
-    def consumer_order_updated():
-        Order.consume_messages(consumer_order_updated)
+                try:
+                    session.execute(
+                        text("""INSERT INTO public.transactions (transaction_id, transaction) 
+                                VALUES (:transaction_id, :data) 
+                                RETURNING transaction_id;"""),
+                        transaction_data
+                    )
+                    session.commit()
+                except Exception as e:
+                    session.rollback()
+                    print(f"Error inserting transaction: {e}")
+                finally:
+                    session.close()

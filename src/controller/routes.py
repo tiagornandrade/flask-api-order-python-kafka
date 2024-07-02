@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
-from repository.order_repository import OrderRepository
-from repository.transaction_repository import TransactionRepository
+from events.producer import *
+from events.consumer import Transaction
+from repositories.order_repository import OrderRepository
+from repositories.transaction_repository import TransactionRepository
 from confluent_kafka import Producer
 from datetime import datetime
 import redis
@@ -27,20 +29,9 @@ def init_app(app: Flask):
     @app.route("/order", methods=["POST"])
     def create_order():
         data = request.json
-        order_id = str(uuid.uuid4())
-        redis_key = f"item_{order_id}"
-        data["order_id"] = order_id
-        # redis_client.set(redis_key, json.dumps(data))
-
-        kafka_payload = {
-            "payload": data,
-            "is_deleted": False,
-            "created_at": datetime.now().isoformat(),
-        }
-        producer.produce("my_topic", key="create", value=json.dumps(kafka_payload))
-        producer.flush()
-
+        order_id = produce_create_order_message(data)
         order_repo.create_order(data)
+        Transaction.consumer_transaction_created()
         return jsonify({"id": order_id}), 201
 
     @app.route("/order/<string:id>", methods=["GET"])
@@ -61,8 +52,7 @@ def init_app(app: Flask):
             "is_deleted": False,
             "updated_at": datetime.now().isoformat(),
         }
-        producer.produce("my_topic", key="update", value=json.dumps(kafka_payload))
-        producer.flush()
+        produce_message("updated", kafka_payload)
 
         success = order_repo.update_order(user_id, data)
         if success:
@@ -71,10 +61,7 @@ def init_app(app: Flask):
 
     @app.route("/order/<string:order_id>", methods=["DELETE"])
     def delete_order(order_id):
-        producer.produce(
-            "my_topic", key="delete", value=str({"id": order_id, "is_deleted": True})
-        )
-        producer.flush()
+        produce_message("deleted", {"id": order_id, "is_deleted": True})
         success = order_repo.delete_order(order_id)
         if success:
             return jsonify({"message": "Deleted successfully"}), 200
