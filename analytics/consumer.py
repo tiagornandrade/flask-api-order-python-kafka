@@ -1,42 +1,42 @@
-import os
-from apache_beam import Pipeline, Map
-from apache_beam.io.kafka import ReadFromKafka
+import logging
+import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.io.jdbc import WriteToJdbc
+from apache_beam.io.kafka import ReadFromKafka
+from apache_beam.io.kafka import WriteToKafka
 
-
-def process(element):
-    return f"Processed: {element}"
 
 def run_pipeline():
-    pipeline_options = PipelineOptions()
+    pipeline_options = PipelineOptions(
+        runner="DirectRunner",
+        streaming=True,
+    )
 
-    with Pipeline(options=pipeline_options) as pipeline:
+    with beam.Pipeline(options=pipeline_options) as pipeline:
         kafka_config = {
             "bootstrap.servers": "localhost:9092",
-            "group.id": "beam-group"
+            "group.id": "beam-group",
+            "auto.offset.reset": "earliest"
         }
 
-        kafka_messages = (
+        read_kafka = (
             pipeline
-            | ReadFromKafka(
+            | "ReadFromKafka" >> ReadFromKafka(
                 consumer_config=kafka_config,
                 topics=["order_created"]
             )
-            | Map(process)
-            | Map(lambda x: (x,))
-            | Map(lambda x: {'value': x})
-            | Map(lambda x: (x['value'],))
-            .with_output_types(str)
-            | WriteToJdbc(
-                table_name="orders",
-                driver_class_name='org.postgresql.Driver',
-                jdbc_url="jdbc:postgresql://localhost:5432/postgres",
-                username="postgres",
-                password="postgres",
-                statement=f"INSERT INTO raw.orders (value) VALUES (?)"
+        )
+
+        write_kafka = (
+            read_kafka
+            | "WriteToKafka" >> WriteToKafka(
+                producer_config={"bootstrap.servers": "localhost:9092"},
+                topic="processed_orders",
             )
         )
 
+        result = pipeline.run()
+        result.wait_until_finish()
+
 if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.INFO)
     run_pipeline()
