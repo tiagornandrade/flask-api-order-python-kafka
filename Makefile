@@ -10,6 +10,9 @@ down:
 python-path: 
 	export PYTHONPATH=$PYTHONPATH:$$(pwd)
 
+eexport-env:
+	export $(cat .env | xargs)
+
 run:
 	python3 src/app.py
 
