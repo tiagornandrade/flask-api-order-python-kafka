@@ -4,8 +4,8 @@ POST http://localhost:5000/order HTTP/1.1
 Content-Type: application/json
 
 {
-  "product_name": "product1",
-  "description": "description1",
-  "price": 100.0,
-  "event_timestamp": "2021-01-01T00:00:00"
+  "product_name": "product3",
+  "description": "description3",
+  "price": 5000.0,
+  "event_timestamp": "2024-07-09T11:42:00"
 }

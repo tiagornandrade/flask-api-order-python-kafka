@@ -10,8 +10,11 @@ down:
 python-path: 
 	export PYTHONPATH=$PYTHONPATH:$$(pwd)
 
+eexport-env:
+	export $(cat .env | xargs)
+
 run:
 	python3 src/app.py
 
 consumer:
-	python3 events/consumer.py
+	python3 analytics/consumer.py
