@@ -132,3 +132,4 @@ SQLAlchemy~=2.0.19
 redis~=5.0.0
 python-dotenv~=1.0.0
 apache-beam
+Flask-Asyncio

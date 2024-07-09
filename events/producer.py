@@ -1,12 +1,11 @@
-import json
-from confluent_kafka import Producer
-from datetime import datetime
 import uuid
+import json
+from datetime import datetime
+from confluent_kafka import Producer
 
 
 bootstrap_servers = "localhost:9092"
 producer = Producer({"bootstrap.servers": bootstrap_servers})
-
 
 def produce_message(topic, key, value):
     producer.produce(topic, key=key, value=value)

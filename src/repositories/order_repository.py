@@ -1,6 +1,6 @@
 import os
 from sqlalchemy import create_engine
-from src.entity.order_entity import Order
+from src.entities.order_entity import PublicOrder
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 
@@ -17,13 +17,13 @@ class OrderRepository:
         self.session = Session()
 
     def create_order(self, order_data):
-        order = Order(**order_data)
+        order = PublicOrder(**order_data)
         self.session.add(order)
         self.session.commit()
         return order.user_id
 
     def get_all_orders(self):
-        orders = self.session.query(Order).all()
+        orders = self.session.query(PublicOrder).all()
         result = []
         for order in orders:
             order_data = {
@@ -40,7 +40,7 @@ class OrderRepository:
 
     def get_order_by_id(self, id):
         try:
-            order = self.session.query(Order).filter_by(order_id=id).first()
+            order = self.session.query(PublicOrder).filter_by(order_id=id).first()
             if order:
                 return {
                     "order_id": order.order_id,
@@ -57,7 +57,7 @@ class OrderRepository:
         return None
 
     def update_order(self, user_id, updated_data):
-        order = self.session.query(Order).filter_by(user_id=user_id).first()
+        order = self.session.query(PublicOrder).filter_by(user_id=user_id).first()
         if order:
             for key, value in updated_data.items():
                 setattr(order, key, value)
@@ -66,7 +66,7 @@ class OrderRepository:
         return False
 
     def delete_order(self, user_id):
-        order = self.session.query(Order).filter_by(user_id=user_id).first()
+        order = self.session.query(PublicOrder).filter_by(user_id=user_id).first()
         if order:
             self.session.delete(order)
             self.session.commit()

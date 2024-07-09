@@ -1,8 +1,9 @@
 import os
 from sqlalchemy import create_engine
-from src.entity.transaction_entity import Transaction
+from src.entities.transaction_entity import PublicTransaction
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -17,7 +18,7 @@ class TransactionRepository:
         self.session = Session()
 
     def get_all_transactions(self):
-        transactions = self.session.query(Transaction).all()
+        transactions = self.session.query(PublicTransaction).all()
         result = []
         for transaction in transactions:
             transaction_data = {
@@ -26,3 +27,4 @@ class TransactionRepository:
             }
             result.append(transaction_data)
         return result
+    

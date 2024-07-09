@@ -1,3 +1,5 @@
+import json
+import redis
 from flask import Flask, request, jsonify
 from events.producer import *
 from events.consumer import Transaction
@@ -5,9 +7,6 @@ from repositories.order_repository import OrderRepository
 from repositories.transaction_repository import TransactionRepository
 from confluent_kafka import Producer
 from datetime import datetime
-import redis
-import uuid
-import json
 
 app = Flask(__name__)
 
@@ -27,6 +26,7 @@ transaction_repo = TransactionRepository()
 
 def init_app(app: Flask):
     @app.route("/order", methods=["POST"])
+
     def create_order():
         data = request.json
         order_id = produce_create_order_message(data)
